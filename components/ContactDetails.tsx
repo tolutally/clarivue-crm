@@ -308,61 +308,6 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
               onSuccess={handleDealCreated}
             />
           </div>
-
-          {/* AI Relationship Tips - Placeholder */}
-          <div className="mt-4">
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <Sparkles className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">AI Relationship Manager</CardTitle>
-                    <p className="text-xs text-indigo-100 mt-1">Coming Soon</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-5 space-y-4">
-                <p className="text-sm text-slate-700 leading-relaxed">
-                  Our AI will analyze this contact and provide personalized insights to help you build stronger relationships.
-                </p>
-                
-                {/* Preview features */}
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
-                    <Lightbulb className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">Smart Engagement Tips</p>
-                      <p className="text-xs text-slate-600 mt-1">Get AI-powered suggestions on when and how to reach out</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
-                    <TrendingUp className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">Relationship Health Score</p>
-                      <p className="text-xs text-slate-600 mt-1">Track interaction patterns and identify opportunities</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
-                    <Sparkles className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">Contextual Research</p>
-                      <p className="text-xs text-slate-600 mt-1">Automatic background research and conversation starters</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-indigo-200">
-                  <p className="text-xs text-center text-indigo-700 font-medium">
-                    🚀 This feature will be activated in a future update
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
         {/* Right column: activities timeline */}
         <div className="lg:col-span-2 space-y-8">
@@ -417,6 +362,59 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
             }}
             initialType={initialActivityType}
           />
+
+          {/* AI Relationship Tips - Placeholder */}
+          <Card className="shadow-xl border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">AI Relationship Manager</CardTitle>
+                  <p className="text-xs text-indigo-100 mt-1">Coming Soon</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              <p className="text-sm text-slate-700 leading-relaxed">
+                Our AI will analyze this contact and provide personalized insights to help you build stronger relationships.
+              </p>
+              
+              {/* Preview features */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                  <Lightbulb className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Smart Engagement Tips</p>
+                    <p className="text-xs text-slate-600 mt-1">Get AI-powered suggestions on when and how to reach out</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                  <TrendingUp className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Relationship Health Score</p>
+                    <p className="text-xs text-slate-600 mt-1">Track interaction patterns and identify opportunities</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                  <Sparkles className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Contextual Research</p>
+                    <p className="text-xs text-slate-600 mt-1">Automatic background research and conversation starters</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-indigo-200">
+                <p className="text-xs text-center text-indigo-700 font-medium">
+                  🚀 This feature will be activated in a future update
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

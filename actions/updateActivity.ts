@@ -1,18 +1,48 @@
-import { action } from '@uibakery/data';
+import { supabase, useMockData } from '../lib/supabase';
 
-function updateActivity() {
-  return action('updateActivity', 'SQL', {
-    databaseName: 'crm_contacts_db_2',
-    query: `
-      UPDATE activities
-      SET
-        type = {{ params.type }},
-        title = {{ params.title }},
-        description = {{ params.description }},
-        created_at = {{ params.activityDate }}::timestamptz
-      WHERE id = {{ params.activityId }}::bigint;
-    `,
-  });
+async function updateActivity({
+  id,
+  type,
+  title,
+  description,
+  created_at,
+}: {
+  id: string;
+  type: string;
+  title: string;
+  description?: string;
+  created_at?: string;
+}) {
+  console.log('updateActivity called with:', { id, type, title, description, created_at });
+  
+  if (useMockData) {
+    console.log('Updating mock activity - not implemented');
+    return [];
+  }
+
+  const updateData: any = {
+    type,
+    title,
+    description: description || null,
+  };
+
+  if (created_at) {
+    updateData.created_at = created_at;
+  }
+
+  const { data, error } = await supabase
+    .from('activities')
+    .update(updateData)
+    .eq('id', id)
+    .select();
+
+  if (error) {
+    console.error('Error updating activity:', error);
+    throw error;
+  }
+
+  console.log('✅ Successfully updated activity:', data);
+  return data;
 }
 
 export default updateActivity;

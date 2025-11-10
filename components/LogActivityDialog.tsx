@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutateAction } from '@uibakery/data';
 import {
   Dialog,
   DialogContent,
@@ -81,8 +80,7 @@ export default function LogActivityDialog({
     },
   });
   const { control, handleSubmit, reset } = form;
-  const [createActivity, { isLoading: creating }] = useMutateAction(createActivityAction);
-  const [updateActivity, { isLoading: updating }] = useMutateAction(updateActivityAction);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Reset form when dialog opens or editActivity changes
@@ -97,29 +95,35 @@ export default function LogActivityDialog({
   }, [open, editActivity, reset]);
 
   const onSubmit = async (data: ActivityFormData) => {
-    // Convert date string to ISO; forms return local date/time strings (YYYY-MM-DDTHH:MM)
-    const isoDate = new Date(data.activityDate).toISOString();
-    if (editActivity) {
-      await updateActivity({
-        id: editActivity.id,
-        type: data.type,
-        title: data.title,
-        description: data.description,
-        created_at: isoDate,
-      });
-    } else {
-      await createActivity({
-        contact_id: contactId || null,
-        deal_id: dealId || null,
-        type: data.type,
-        title: data.title,
-        description: data.description,
-        created_by: '',
-        created_at: isoDate,
-      });
+    setIsSubmitting(true);
+    try {
+      // Convert date string to ISO; forms return local date/time strings (YYYY-MM-DDTHH:MM)
+      const isoDate = new Date(data.activityDate).toISOString();
+      if (editActivity) {
+        await updateActivityAction({
+          id: editActivity.id,
+          type: data.type,
+          title: data.title,
+          description: data.description,
+          created_at: isoDate,
+        });
+      } else {
+        await createActivityAction({
+          contact_id: contactId || null,
+          deal_id: dealId || null,
+          type: data.type,
+          title: data.title,
+          description: data.description,
+          created_at: isoDate,
+        });
+      }
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error('Failed to save activity:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-    onSuccess();
-    onClose();
   };
 
   return (
@@ -205,10 +209,10 @@ export default function LogActivityDialog({
             />
             {/* Buttons */}
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={creating || updating} className="flex-1">
+              <Button type="submit" disabled={isSubmitting} className="flex-1">
                 {editActivity ? 'Save' : 'Log'}
               </Button>
-              <Button type="button" variant="outline" onClick={onClose} disabled={creating || updating}>
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
                 Cancel
               </Button>
             </div>
