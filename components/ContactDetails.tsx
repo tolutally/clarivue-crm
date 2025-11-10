@@ -29,7 +29,6 @@ import CreateDealSheet from '@components/CreateDealSheet';
 import { Contact } from '../types/contact';
 import { Deal } from '../types/deal';
 import { format } from 'date-fns';
-import LogActivityDialog from '@components/LogActivityDialog';
 
 /**
  * Displays the details of a single contact along with their associated deals and activities.
@@ -347,20 +346,16 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
             </CardContent>
           </Card>
 
-          {/* Activity Dialog */}
-          <LogActivityDialog
-            open={isLoggingActivity}
-            onClose={() => {
-              setIsLoggingActivity(false);
-              setInitialActivityType('note');
-            }}
+          {/* Activities Timeline - handles its own LogActivityDialog */}
+          <ActivitiesTimeline
             contactId={contactId}
             contactName={`${contact.first_name} ${contact.last_name}`}
-            onSuccess={() => {
+            externalTriggerOpen={isLoggingActivity}
+            externalInitialType={initialActivityType}
+            onExternalClose={() => {
               setIsLoggingActivity(false);
               setInitialActivityType('note');
             }}
-            initialType={initialActivityType}
           />
 
           {/* AI Relationship Tips - Placeholder */}

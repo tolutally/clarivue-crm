@@ -19,9 +19,18 @@ import type { Activity } from '@types/activity';
 type Props = {
   contactId: string;
   contactName: string;
+  externalTriggerOpen?: boolean;
+  externalInitialType?: 'note' | 'call' | 'meeting';
+  onExternalClose?: () => void;
 };
 
-function ActivitiesTimeline({ contactId, contactName }: Props) {
+function ActivitiesTimeline({ 
+  contactId, 
+  contactName,
+  externalTriggerOpen,
+  externalInitialType,
+  onExternalClose
+}: Props) {
   // Whether the log activity dialog is open
   const [isLoggingActivity, setIsLoggingActivity] = useState(false);
   // The activity currently being edited (if any)
@@ -40,11 +49,17 @@ function ActivitiesTimeline({ contactId, contactName }: Props) {
   // Ensure we always treat activities as an array of Activity objects
   const activityList: Activity[] = Array.isArray(activities) ? activities : [];
 
+  // Handle external trigger
+  const dialogOpen = externalTriggerOpen !== undefined ? externalTriggerOpen : isLoggingActivity;
+
   // Called after a new activity has been logged.  This closes the dialog,
   // clears any editing state and refreshes the activities list.
   const handleActivityLogged = () => {
     setIsLoggingActivity(false);
     setEditingActivity(null);
+    if (onExternalClose) {
+      onExternalClose();
+    }
     refresh();
   };
 
@@ -65,6 +80,9 @@ function ActivitiesTimeline({ contactId, contactName }: Props) {
   const handleDialogClose = () => {
     setIsLoggingActivity(false);
     setEditingActivity(null);
+    if (onExternalClose) {
+      onExternalClose();
+    }
   };
 
   return (
@@ -119,12 +137,13 @@ function ActivitiesTimeline({ contactId, contactName }: Props) {
         </CardContent>
       </Card>
       <LogActivityDialog
-        open={isLoggingActivity}
+        open={dialogOpen}
         onClose={handleDialogClose}
         contactId={contactId}
         contactName={contactName}
         onSuccess={handleActivityLogged}
         editActivity={editingActivity}
+        initialType={externalInitialType}
       />
     </>
   );

@@ -97,10 +97,20 @@ export default function LogActivityDialog({
   const onSubmit = async (data: ActivityFormData) => {
     setIsSubmitting(true);
     try {
+      console.log('🚀 Submitting activity:', {
+        editActivity,
+        data,
+        contactId,
+        dealId
+      });
+
       // Convert date string to ISO; forms return local date/time strings (YYYY-MM-DDTHH:MM)
       const isoDate = new Date(data.activityDate).toISOString();
+      
+      let result;
       if (editActivity) {
-        await updateActivityAction({
+        console.log('📝 Updating activity...');
+        result = await updateActivityAction({
           id: editActivity.id,
           type: data.type,
           title: data.title,
@@ -108,7 +118,8 @@ export default function LogActivityDialog({
           created_at: isoDate,
         });
       } else {
-        await createActivityAction({
+        console.log('➕ Creating new activity...');
+        result = await createActivityAction({
           contact_id: contactId || null,
           deal_id: dealId || null,
           type: data.type,
@@ -117,10 +128,14 @@ export default function LogActivityDialog({
           created_at: isoDate,
         });
       }
+      
+      console.log('✅ Activity saved successfully:', result);
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Failed to save activity:', error);
+      console.error('❌ Failed to save activity:', error);
+      // Show error to user instead of just console.log
+      alert(`Failed to save activity: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
