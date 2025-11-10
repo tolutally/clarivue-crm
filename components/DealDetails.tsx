@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Badge } from '@components/ui/badge';
 import { Skeleton } from '@components/ui/skeleton';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import loadDealByIdAction from '@actions/loadDealById';
+import deleteDealAction from '@actions/deleteDeal';
 import DealActivitiesTimeline from './DealActivitiesTimeline';
 import AttachmentList from './AttachmentList';
-import type { DealWithContact } from '@types/deal';
+import type { DealWithContact } from '../types/deal';
 import { format } from 'date-fns';
 
 type Props = {
@@ -24,6 +26,24 @@ type Props = {
 export default function DealDetails({ dealId, onBack, onViewContact }: Props) {
   const { data: deals = [], loading } = useLoadAction(loadDealByIdAction, [], { id: dealId });
   const deal: DealWithContact | undefined = deals && deals[0] ? (deals[0] as DealWithContact) : undefined;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this deal? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteDealAction({ dealId });
+      console.log('Deal deleted successfully');
+      onBack(); // Navigate back after successful deletion
+    } catch (error) {
+      console.error('Failed to delete deal:', error);
+      alert('Failed to delete deal. Please try again.');
+      setIsDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -66,14 +86,27 @@ export default function DealDetails({ dealId, onBack, onViewContact }: Props) {
 
   return (
     <div className="w-full p-8 pt-24">
-      <Button
-        variant="ghost"
-        onClick={onBack}
-        className="mb-6 hover:bg-blue-100 text-blue-700 font-medium"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Deals
-      </Button>
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="hover:bg-blue-100 text-blue-700 font-medium"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Deals
+        </Button>
+        
+        <Button
+          variant="outline"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          {isDeleting ? 'Deleting...' : 'Delete Deal'}
+        </Button>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Deal info */}
         <div className="lg:col-span-1">

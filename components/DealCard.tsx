@@ -16,28 +16,31 @@ type Props = {
 };
 
 const STAGES = [
-  { id: 'new', title: 'New', color: 'bg-blue-500' },
-  { id: 'qualified', title: 'Qualified', color: 'bg-amber-500' },
-  { id: 'negotiating', title: 'Negotiating', color: 'bg-orange-500' },
-  { id: 'closed_won', title: 'Closed Won', color: 'bg-emerald-500' },
-  { id: 'closed_lost', title: 'Closed Lost', color: 'bg-rose-500' },
+  { id: 'new', title: 'New', color: 'bg-gradient-to-r from-sky-400 to-blue-500', dotColor: 'bg-sky-500' },
+  { id: 'qualified', title: 'Qualified', color: 'bg-gradient-to-r from-amber-400 to-yellow-500', dotColor: 'bg-amber-500' },
+  { id: 'negotiating', title: 'Negotiating', color: 'bg-gradient-to-r from-violet-400 to-purple-500', dotColor: 'bg-violet-500' },
+  { id: 'closed_won', title: 'Closed Won', color: 'bg-gradient-to-r from-emerald-400 to-green-500', dotColor: 'bg-emerald-500' },
+  { id: 'closed_lost', title: 'Closed Lost', color: 'bg-gradient-to-r from-rose-400 to-pink-500', dotColor: 'bg-rose-500' },
 ];
 
-const signalColors: Record<'positive' | 'neutral' | 'negative', { bg: string; text: string; dot: string }> = {
+const signalColors: Record<'positive' | 'neutral' | 'negative', { bg: string; text: string; dot: string; border: string }> = {
   positive: {
-    bg: 'bg-emerald-50 border-emerald-200',
-    text: 'text-emerald-800',
-    dot: 'bg-emerald-500'
+    bg: 'bg-gradient-to-br from-emerald-50 to-teal-50',
+    text: 'text-emerald-700',
+    dot: 'bg-gradient-to-r from-emerald-400 to-teal-500 shadow-emerald-200',
+    border: 'border-emerald-200/60'
   },
   neutral: {
-    bg: 'bg-amber-50 border-amber-200',
-    text: 'text-amber-800',
-    dot: 'bg-amber-500'
+    bg: 'bg-gradient-to-br from-amber-50 to-yellow-50',
+    text: 'text-amber-700',
+    dot: 'bg-gradient-to-r from-amber-400 to-yellow-500 shadow-amber-200',
+    border: 'border-amber-200/60'
   },
   negative: {
-    bg: 'bg-rose-50 border-rose-200',
-    text: 'text-rose-800',
-    dot: 'bg-rose-500'
+    bg: 'bg-gradient-to-br from-rose-50 to-pink-50',
+    text: 'text-rose-700',
+    dot: 'bg-gradient-to-r from-rose-400 to-pink-500 shadow-rose-200',
+    border: 'border-rose-200/60'
   },
 };
 
@@ -60,13 +63,13 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
   return (
     <Card 
       onClick={handleCardClick}
-      className="group cursor-pointer hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-200 border border-slate-200 bg-white hover:scale-[1.02] hover:-translate-y-1 !overflow-visible"
+      className="group cursor-pointer hover:shadow-xl hover:shadow-indigo-100/50 transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm hover:scale-[1.03] hover:-translate-y-1.5 !overflow-visible shadow-lg"
     >
-      <CardHeader className="p-4 pb-3">
+      <CardHeader className="p-5 pb-3 bg-gradient-to-br from-slate-50/50 to-white rounded-t-xl">
         {/* Header: Deal title (left) + Stage dropdown (right) */}
         <div className="flex justify-between items-start gap-2">
           {/* Deal Title - truncated to prevent overlap */}
-          <h3 className="text-lg font-semibold text-slate-900 leading-tight group-hover:text-slate-800 transition-colors line-clamp-2 flex-1 pr-2">
+          <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors line-clamp-2 flex-1 pr-2">
             {deal.name}
           </h3>
           
@@ -74,22 +77,22 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
           <div data-stage-selector className="shrink-0 relative">
             <Select value={deal.stage} onValueChange={handleStageChange}>
               <SelectTrigger 
-                className="h-8 w-8 p-0 flex items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all duration-150 [&>svg]:h-4 [&>svg]:w-4"
+                className="h-9 w-9 p-0 flex items-center justify-center rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200 [&>svg]:h-4 [&>svg]:w-4"
                 aria-label="Change deal stage"
               >
                 {/* icon-only trigger; chevron comes from Select by default */}
               </SelectTrigger>
 
-              <SelectContent className="right-0 w-[140px]">
+              <SelectContent className="right-0 w-[160px] border-2 shadow-xl">
                 {STAGES.map((stage) => (
                   <SelectItem 
                     key={stage.id} 
                     value={stage.id}
-                    className="text-sm py-2 px-3 hover:bg-slate-50 focus:bg-slate-50 rounded-md mx-1"
+                    className="text-sm py-2.5 px-3 hover:bg-slate-50 focus:bg-slate-100 rounded-lg mx-1 cursor-pointer"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${stage.color}`}></div>
-                      <span>{stage.title}</span>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2.5 h-2.5 rounded-full ${stage.dotColor} shadow-md`}></div>
+                      <span className="font-medium">{stage.title}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -99,35 +102,37 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
         </div>
       </CardHeader>
       
-      <CardContent className="px-4 pb-4 space-y-3">
+      <CardContent className="px-5 pb-5 space-y-3.5">
         {/* Signal indicator badge */}
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit ${signalStyle.bg}`}>
-          <div className={`w-2 h-2 rounded-full ${signalStyle.dot} shadow-sm`}></div>
-          <span className={`text-xs font-medium uppercase tracking-wide ${signalStyle.text}`}>
+        <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-xl border ${signalStyle.border} ${signalStyle.bg} shadow-md w-fit backdrop-blur-sm`}>
+          <div className={`w-2.5 h-2.5 rounded-full ${signalStyle.dot} shadow-lg animate-pulse`}></div>
+          <span className={`text-xs font-bold uppercase tracking-wider ${signalStyle.text}`}>
             {deal.signal}
           </span>
         </div>
 
         {/* Use case / description */}
-        <div className="flex items-start gap-2">
-          <Target className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-          <p className="text-sm text-slate-600 leading-relaxed italic line-clamp-2">
+        <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl border border-slate-100">
+          <Target className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+          <p className="text-sm text-slate-700 leading-relaxed italic line-clamp-2 font-medium">
             {deal.use_case}
           </p>
         </div>
 
         {/* Contact information */}
         {deal.contact_first_name && (
-          <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-            <User className="w-4 h-4 text-slate-500 shrink-0" />
+          <div className="flex items-center gap-3 p-3.5 bg-gradient-to-br from-indigo-50 to-purple-50/50 rounded-xl border border-indigo-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-md">
+              <User className="w-5 h-5 text-white" />
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-800 truncate">
+              <p className="text-sm font-bold text-slate-900 truncate">
                 {deal.contact_first_name} {deal.contact_last_name}
               </p>
               {deal.contact_company && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Building2 className="w-3 h-3 text-slate-400" />
-                  <p className="text-xs text-slate-500 truncate">
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <p className="text-xs text-slate-600 truncate font-medium">
                     {deal.contact_company}
                   </p>
                 </div>
