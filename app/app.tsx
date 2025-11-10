@@ -6,7 +6,6 @@ import ContactDetails from '@components/ContactDetails';
 import { DealsBoardContainer } from '../components/DealsBoardContainer';
 import DealDetails from '@components/DealDetails';
 import ErrorBoundary from '@components/ErrorBoundary';
-import { debugSupabase } from '../debug-supabase';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { Auth } from '@components/Auth';
 import { useMockData } from '@/lib/supabase';
@@ -21,11 +20,6 @@ function AppContent() {
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const { user, loading, signOut } = useAuth();
-  
-  // Debug Supabase connection on app load
-  useEffect(() => {
-    debugSupabase().catch(console.error);
-  }, []);
   
   console.log('Current view:', view, 'selectedContactId:', selectedContactId);
 
