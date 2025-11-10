@@ -66,44 +66,41 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
       onClick={handleCardClick}
       className="group cursor-pointer hover:shadow-xl hover:shadow-indigo-100/50 transition-all duration-300 border-0 bg-white/95 backdrop-blur-sm hover:scale-[1.03] hover:-translate-y-1.5 !overflow-visible shadow-lg"
     >
-      <CardHeader className="p-5 pb-3 bg-gradient-to-br from-slate-50/50 to-white rounded-t-xl">
-        {/* Header: Deal title (left) + Stage dropdown (right) */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-2">
-          {/* Deal Title - truncated to prevent overlap */}
-          <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors line-clamp-2 flex-1 sm:pr-2">
-            {deal.name}
-          </h3>
-          
-          {/* Stage selector with text */}
-          <div data-stage-selector className="shrink-0 relative w-full sm:w-auto">
-            <Select value={deal.stage} onValueChange={handleStageChange}>
-              <SelectTrigger 
-                className="h-9 px-3 gap-2 flex items-center justify-center sm:justify-start rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200 w-full sm:w-auto"
-                aria-label="Change deal stage"
-              >
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${currentStage?.dotColor} shadow-sm`}></div>
-                  <span className="text-xs font-semibold text-slate-700">{currentStage?.title}</span>
-                </div>
-              </SelectTrigger>
+      <CardHeader className="p-5 pb-3 bg-gradient-to-br from-slate-50/50 to-white rounded-t-xl space-y-3">
+        {/* Stage selector as a pill at the top */}
+        <div data-stage-selector className="flex justify-start">
+          <Select value={deal.stage} onValueChange={handleStageChange}>
+            <SelectTrigger 
+              className={`h-7 px-3 gap-2 inline-flex items-center rounded-full ${currentStage?.color} text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 w-auto font-semibold text-xs`}
+              aria-label="Change deal stage"
+            >
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/80"></div>
+                <span>{currentStage?.title}</span>
+              </div>
+            </SelectTrigger>
 
-              <SelectContent className="right-0 w-[160px] border-2 shadow-xl">
-                {STAGES.map((stage) => (
-                  <SelectItem 
-                    key={stage.id} 
-                    value={stage.id}
-                    className="text-sm py-2.5 px-3 hover:bg-slate-50 focus:bg-slate-100 rounded-lg mx-1 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2.5 h-2.5 rounded-full ${stage.dotColor} shadow-md`}></div>
-                      <span className="font-medium">{stage.title}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <SelectContent className="w-[160px] border-2 shadow-xl">
+              {STAGES.map((stage) => (
+                <SelectItem 
+                  key={stage.id} 
+                  value={stage.id}
+                  className="text-sm py-2.5 px-3 hover:bg-slate-50 focus:bg-slate-100 rounded-lg mx-1 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2.5 h-2.5 rounded-full ${stage.dotColor} shadow-md`}></div>
+                    <span className="font-medium">{stage.title}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Deal Title */}
+        <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors line-clamp-2">
+          {deal.name}
+        </h3>
       </CardHeader>
       
       <CardContent className="px-5 pb-5 space-y-3.5">

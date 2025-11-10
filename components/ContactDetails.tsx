@@ -82,6 +82,12 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
   const contact: Contact | null = contacts ? (contacts as Contact) : null;
   
   console.log('Contact data:', { contact, contacts, loading });
+  console.log('🎨 ContactDetails state:', { 
+    isLoggingActivity, 
+    initialActivityType,
+    contactId,
+    hasContact: !!contact
+  });
 
   /**
    * Called when the contact form successfully saves. Exits edit mode and refreshes the contact.
@@ -353,6 +359,7 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
             externalTriggerOpen={isLoggingActivity}
             externalInitialType={initialActivityType}
             onExternalClose={() => {
+              console.log('🔒 ActivitiesTimeline external close called');
               setIsLoggingActivity(false);
               setInitialActivityType('note');
             }}

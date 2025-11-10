@@ -95,6 +95,7 @@ export default function LogActivityDialog({
   }, [open, editActivity, reset]);
 
   const onSubmit = async (data: ActivityFormData) => {
+    console.log('🚀 Form submitted, preventing default and starting submission');
     setIsSubmitting(true);
     try {
       console.log('🚀 Submitting activity:', {
@@ -152,12 +153,11 @@ export default function LogActivityDialog({
               : `Log an activity for ${contactName || dealTitle}`}
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
-            {/* Type */}
-            <FormField
-              control={control}
-              name="type"
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          {/* Type */}
+          <FormField
+            control={control}
+            name="type"
               render={({ field }: { field: FieldValues }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
@@ -232,7 +232,6 @@ export default function LogActivityDialog({
               </Button>
             </div>
           </form>
-        </Form>
       </DialogContent>
     </Dialog>
   );

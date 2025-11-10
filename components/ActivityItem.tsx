@@ -69,75 +69,64 @@ function ActivityItem({ activity, isLast, onEdit, onDelete }: Props) {
   };
 
   return (
-    <div className={`relative pl-14 ${!isLast ? 'pb-8' : ''}`}>
-      <div
-        className={`absolute left-4 w-8 h-8 rounded-full border flex items-center justify-center ${colorClass}`}
-      >
+    <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+      {/* Icon */}
+      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 ${colorClass}`}>
         <IconComponent className="w-4 h-4" />
       </div>
-      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-all hover:border-indigo-200">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-2">
-              <h3 className="font-medium text-slate-900 truncate">{activity.title}</h3>
-              <Badge
-                variant="outline"
-                className={`text-xs shrink-0 ${
-                  activity.type === 'call'
-                    ? 'border-green-300 text-green-700 bg-green-50'
-                    : activity.type === 'email'
-                    ? 'border-blue-300 text-blue-700 bg-blue-50'
-                    : activity.type === 'meeting'
-                    ? 'border-purple-300 text-purple-700 bg-purple-50'
-                    : activity.type === 'note'
-                    ? 'border-amber-300 text-amber-700 bg-amber-50'
-                    : activity.type === 'message'
-                    ? 'border-pink-300 text-pink-700 bg-pink-50'
-                    : 'border-slate-300 text-slate-700 bg-slate-50'
-                }`}
-              >
-                {activity.type}
-              </Badge>
-            </div>
-            {activity.description && (
-              <div className="prose prose-sm max-w-none text-slate-600 mb-2">
-                {activity.description}
-              </div>
-            )}
-            <div className="flex items-center gap-4 mt-3">
-              <p className="text-xs text-slate-500">
-                {format(new Date(activity.created_at), 'PPp')}
-              </p>
-              {activity.created_by && (
-                <>
-                  <span className="text-xs text-slate-300">•</span>
-                  <p className="text-xs text-slate-500">
-                    by {activity.created_by}
-                  </p>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(activity)}
-              className="h-8 w-8 p-0 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50"
-            >
-              <Edit2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="h-8 w-8 p-0 text-slate-600 hover:text-red-600 hover:bg-red-50"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <h3 className="font-medium text-sm text-slate-900 truncate">{activity.title}</h3>
+          <Badge
+            variant="outline"
+            className={`text-[10px] px-1.5 py-0.5 shrink-0 font-medium ${
+              activity.type === 'call'
+                ? 'border-green-300 text-green-700 bg-green-50'
+                : activity.type === 'email'
+                ? 'border-blue-300 text-blue-700 bg-blue-50'
+                : activity.type === 'meeting'
+                ? 'border-purple-300 text-purple-700 bg-purple-50'
+                : activity.type === 'note'
+                ? 'border-amber-300 text-amber-700 bg-amber-50'
+                : activity.type === 'message'
+                ? 'border-pink-300 text-pink-700 bg-pink-50'
+                : 'border-slate-300 text-slate-700 bg-slate-50'
+            }`}
+          >
+            {activity.type}
+          </Badge>
         </div>
+        {activity.description && (
+          <p className="text-xs text-slate-600 mb-1 line-clamp-2">
+            {activity.description}
+          </p>
+        )}
+        <p className="text-[11px] text-slate-400">
+          {format(new Date(activity.created_at), 'MMM d, yyyy • h:mm a')}
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-1 shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit(activity)}
+          className="h-9 w-9 p-0 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50"
+        >
+          <Edit2 className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="h-9 w-9 p-0 text-slate-500 hover:text-red-600 hover:bg-red-50"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );
