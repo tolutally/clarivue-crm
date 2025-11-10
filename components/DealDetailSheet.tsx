@@ -17,11 +17,11 @@ type Props = {
 };
 
 const STAGES = [
-  { id: 'new', title: 'New', color: 'bg-blue-500' },
-  { id: 'qualified', title: 'Qualified', color: 'bg-amber-500' },
-  { id: 'negotiating', title: 'Negotiating', color: 'bg-orange-500' },
-  { id: 'closed_won', title: 'Closed Won', color: 'bg-emerald-500' },
-  { id: 'closed_lost', title: 'Closed Lost', color: 'bg-rose-500' },
+  { id: 'new', title: 'New', color: 'bg-gradient-to-r from-sky-400 to-blue-500', dotColor: 'bg-sky-500' },
+  { id: 'qualified', title: 'Qualified', color: 'bg-gradient-to-r from-amber-400 to-yellow-500', dotColor: 'bg-amber-500' },
+  { id: 'negotiating', title: 'Negotiating', color: 'bg-gradient-to-r from-violet-400 to-purple-500', dotColor: 'bg-violet-500' },
+  { id: 'closed_won', title: 'Closed Won', color: 'bg-gradient-to-r from-emerald-400 to-green-500', dotColor: 'bg-emerald-500' },
+  { id: 'closed_lost', title: 'Closed Lost', color: 'bg-gradient-to-r from-rose-400 to-pink-500', dotColor: 'bg-rose-500' },
 ];
 
 const signalColors: Record<'positive' | 'neutral' | 'negative', { bg: string; text: string; dot: string; label: string }> = {
@@ -172,7 +172,7 @@ export default function DealDetailSheet({ deal, open, onClose, onStageChange, on
               <div className="space-y-6">
                 
                 {/* Signal and Stage */}
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${signalStyle.bg}`}>
                     <div className={`w-2 h-2 rounded-full ${signalStyle.dot}`}></div>
                     <span className={`text-xs font-medium uppercase tracking-wide ${signalStyle.text}`}>
@@ -181,18 +181,18 @@ export default function DealDetailSheet({ deal, open, onClose, onStageChange, on
                   </div>
                   
                   <Select value={deal.stage} onValueChange={handleStageChange}>
-                    <SelectTrigger className="w-[140px] h-8">
+                    <SelectTrigger className="w-full sm:w-[160px] h-9 px-3">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${currentStage?.color}`}></div>
-                        <SelectValue />
+                        <div className={`w-2.5 h-2.5 rounded-full ${currentStage?.dotColor} shadow-sm`}></div>
+                        <span className="text-sm font-semibold text-slate-700">{currentStage?.title}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
                       {STAGES.map((stage) => (
                         <SelectItem key={stage.id} value={stage.id}>
                           <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${stage.color}`}></div>
-                            <span>{stage.title}</span>
+                            <div className={`w-2.5 h-2.5 rounded-full ${stage.dotColor} shadow-sm`}></div>
+                            <span className="font-medium">{stage.title}</span>
                           </div>
                         </SelectItem>
                       ))}

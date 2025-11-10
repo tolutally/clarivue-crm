@@ -68,17 +68,17 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
     >
       <CardHeader className="p-5 pb-3 bg-gradient-to-br from-slate-50/50 to-white rounded-t-xl">
         {/* Header: Deal title (left) + Stage dropdown (right) */}
-        <div className="flex justify-between items-start gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-2">
           {/* Deal Title - truncated to prevent overlap */}
-          <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors line-clamp-2 flex-1 pr-2">
+          <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors line-clamp-2 flex-1 sm:pr-2">
             {deal.name}
           </h3>
           
           {/* Stage selector with text */}
-          <div data-stage-selector className="shrink-0 relative">
+          <div data-stage-selector className="shrink-0 relative w-full sm:w-auto">
             <Select value={deal.stage} onValueChange={handleStageChange}>
               <SelectTrigger 
-                className="h-9 px-3 gap-2 flex items-center rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200"
+                className="h-9 px-3 gap-2 flex items-center justify-center sm:justify-start rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200 w-full sm:w-auto"
                 aria-label="Change deal stage"
               >
                 <div className="flex items-center gap-2">

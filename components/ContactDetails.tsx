@@ -14,10 +14,15 @@ import {
   Edit2,
   Plus,
   CalendarDays,
-  Clock
+  Clock,
+  Trash2,
+  Sparkles,
+  Lightbulb,
+  TrendingUp
 } from 'lucide-react';
 import loadContactByIdAction from '@actions/loadContactById';
 import loadDealsByContactAction from '@actions/loadDealsByContact';
+import deleteContactAction from '@actions/deleteContact';
 import ContactForm from '@components/ContactForm';
 import ActivitiesTimeline from '@components/ActivitiesTimeline';
 import CreateDealSheet from '@components/CreateDealSheet';
@@ -72,6 +77,7 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
   const [isCreateDealOpen, setIsCreateDealOpen] = useState(false);
   const [isLoggingActivity, setIsLoggingActivity] = useState(false);
   const [initialActivityType, setInitialActivityType] = useState<'note' | 'call' | 'meeting'>('note');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // The contact data should be directly available
   const contact: Contact | null = contacts ? (contacts as Contact) : null;
@@ -91,6 +97,33 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
    */
   const handleDealCreated = () => {
     refreshDeals();
+  };
+
+  /**
+   * Called when the user wants to delete the contact.
+   */
+  const handleDeleteContact = async () => {
+    if (!contact) return;
+
+    const confirmMessage = deals && deals.length > 0
+      ? `This contact has ${deals.length} associated deal(s). Are you sure you want to delete "${contact.first_name} ${contact.last_name}"? This action cannot be undone.`
+      : `Are you sure you want to delete "${contact.first_name} ${contact.last_name}"? This action cannot be undone.`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteContactAction({ contactId: contact.id });
+      // Navigate back to contacts list after successful deletion
+      onBack();
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      alert('Failed to delete contact. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Render a skeleton while data is loading.
@@ -193,9 +226,20 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
                     </div>
                   </div>
                 </div>
-                <Button size="icon" variant="ghost" onClick={() => setIsEditing(true)}>
-                  <Edit2 className="w-5 h-5 text-slate-500" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button size="icon" variant="ghost" onClick={() => setIsEditing(true)}>
+                    <Edit2 className="w-5 h-5 text-slate-500" />
+                  </Button>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={handleDeleteContact}
+                    disabled={isDeleting}
+                    className="hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             {/* Show either the editing form or the tag list */}
@@ -263,6 +307,61 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
               onClose={() => setIsCreateDealOpen(false)}
               onSuccess={handleDealCreated}
             />
+          </div>
+
+          {/* AI Relationship Tips - Placeholder */}
+          <div className="mt-4">
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">AI Relationship Manager</CardTitle>
+                    <p className="text-xs text-indigo-100 mt-1">Coming Soon</p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-5 space-y-4">
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  Our AI will analyze this contact and provide personalized insights to help you build stronger relationships.
+                </p>
+                
+                {/* Preview features */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                    <Lightbulb className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Smart Engagement Tips</p>
+                      <p className="text-xs text-slate-600 mt-1">Get AI-powered suggestions on when and how to reach out</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                    <TrendingUp className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Relationship Health Score</p>
+                      <p className="text-xs text-slate-600 mt-1">Track interaction patterns and identify opportunities</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-white/70 backdrop-blur-sm rounded-lg border border-indigo-100">
+                    <Sparkles className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Contextual Research</p>
+                      <p className="text-xs text-slate-600 mt-1">Automatic background research and conversation starters</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-indigo-200">
+                  <p className="text-xs text-center text-indigo-700 font-medium">
+                    🚀 This feature will be activated in a future update
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
         {/* Right column: activities timeline */}
