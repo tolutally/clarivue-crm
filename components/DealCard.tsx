@@ -59,6 +59,7 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
   };
 
   const signalStyle = signalColors[deal.signal];
+  const currentStage = STAGES.find(s => s.id === deal.stage);
 
   return (
     <Card 
@@ -73,14 +74,17 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
             {deal.name}
           </h3>
           
-          {/* Icon-only stage selector */}
+          {/* Stage selector with text */}
           <div data-stage-selector className="shrink-0 relative">
             <Select value={deal.stage} onValueChange={handleStageChange}>
               <SelectTrigger 
-                className="h-9 w-9 p-0 flex items-center justify-center rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200 [&>svg]:h-4 [&>svg]:w-4"
+                className="h-9 px-3 gap-2 flex items-center rounded-xl border-2 border-indigo-200/50 bg-white hover:bg-indigo-50 hover:border-indigo-300 shadow-md hover:shadow-lg transition-all duration-200"
                 aria-label="Change deal stage"
               >
-                {/* icon-only trigger; chevron comes from Select by default */}
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${currentStage?.dotColor} shadow-sm`}></div>
+                  <span className="text-xs font-semibold text-slate-700">{currentStage?.title}</span>
+                </div>
               </SelectTrigger>
 
               <SelectContent className="right-0 w-[160px] border-2 shadow-xl">
