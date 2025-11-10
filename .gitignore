@@ -48,3 +48,4 @@ run-*.sh
 # Build output
 build/
 coverage/
+.vercel
