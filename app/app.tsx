@@ -23,6 +23,37 @@ function AppContent() {
   
   console.log('Current view:', view, 'selectedContactId:', selectedContactId);
 
+  // Define callbacks BEFORE early returns (hooks must be called unconditionally)
+  const handleViewContact = useCallback((contactId: string) => {
+    setSelectedContactId(contactId);
+    setView('contact-details');
+  }, []);
+
+  const handleViewDeal = useCallback((dealId: string) => {
+    setSelectedDealId(dealId);
+    setView('deal-details');
+  }, []);
+
+  const handleBackToContacts = useCallback(() => {
+    setView('contacts');
+    setSelectedContactId(null);
+  }, []);
+
+  const handleBackToDeals = useCallback(() => {
+    setView('deals');
+    setSelectedDealId(null);
+  }, []);
+
+  const handleTabChange = useCallback((value: string) => {
+    if (value === 'contacts') {
+      setView('contacts');
+      setSelectedContactId(null);
+    } else if (value === 'deals') {
+      setView('deals');
+      setSelectedDealId(null);
+    }
+  }, []);
+
   // Show loading state
   if (!useMockData && loading) {
     return (
@@ -36,36 +67,6 @@ function AppContent() {
   if (!useMockData && !user) {
     return <Auth />;
   }
-
-  const handleViewContact = useCallback((contactId: string) => {
-    setSelectedContactId(contactId);
-    setView('contact-details');
-  }, []);
-
-  const handleViewDeal = useCallback((dealId: string) => {
-    setSelectedDealId(dealId);
-    setView('deal-details');
-  }, []);
-
-  const handleBackToContacts = () => {
-    setView('contacts');
-    setSelectedContactId(null);
-  };
-
-  const handleBackToDeals = () => {
-    setView('deals');
-    setSelectedDealId(null);
-  };
-
-  const handleTabChange = (value: string) => {
-    if (value === 'contacts') {
-      setView('contacts');
-      setSelectedContactId(null);
-    } else if (value === 'deals') {
-      setView('deals');
-      setSelectedDealId(null);
-    }
-  };
 
   const activeTab = view === 'contacts' || view === 'contact-details' ? 'contacts' : 'deals';
 

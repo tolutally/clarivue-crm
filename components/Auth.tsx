@@ -8,25 +8,37 @@ import { Mail, Loader2, ShieldAlert } from 'lucide-react';
 function isEmailAllowed(email: string): boolean {
   const allowedList = import.meta.env.VITE_ALLOWED_EMAILS || '';
   
+  console.log('🔍 Checking email allowlist:', {
+    email,
+    allowedList,
+    isPlaceholder: allowedList === 'your@email.com'
+  });
+  
   // If no allowlist is configured, allow all (open access)
   if (!allowedList || allowedList === 'your@email.com') {
+    console.warn('⚠️ No allowlist configured - allowing all emails. Set VITE_ALLOWED_EMAILS in .env.local to restrict access.');
     return true;
   }
   
   const allowed = allowedList.split(',').map((e: string) => e.trim().toLowerCase());
   const emailLower = email.toLowerCase();
   
+  console.log('✅ Allowlist active:', allowed);
+  
   // Check for exact email match
   if (allowed.includes(emailLower)) {
+    console.log('✅ Email matched exactly');
     return true;
   }
   
   // Check for domain match (e.g., @company.com)
   const emailDomain = '@' + emailLower.split('@')[1];
   if (allowed.some((a: string) => a.startsWith('@') && emailDomain === a)) {
+    console.log('✅ Domain matched:', emailDomain);
     return true;
   }
   
+  console.log('❌ Email not in allowlist');
   return false;
 }
 
