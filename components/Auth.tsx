@@ -2,7 +2,33 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Mail, Loader2 } from 'lucide-react';
+import { Mail, Loader2, ShieldAlert } from 'lucide-react';
+
+// Check if an email is allowed to sign in
+function isEmailAllowed(email: string): boolean {
+  const allowedList = import.meta.env.VITE_ALLOWED_EMAILS || '';
+  
+  // If no allowlist is configured, allow all (open access)
+  if (!allowedList || allowedList === 'your@email.com') {
+    return true;
+  }
+  
+  const allowed = allowedList.split(',').map((e: string) => e.trim().toLowerCase());
+  const emailLower = email.toLowerCase();
+  
+  // Check for exact email match
+  if (allowed.includes(emailLower)) {
+    return true;
+  }
+  
+  // Check for domain match (e.g., @company.com)
+  const emailDomain = '@' + emailLower.split('@')[1];
+  if (allowed.some((a: string) => a.startsWith('@') && emailDomain === a)) {
+    return true;
+  }
+  
+  return false;
+}
 
 export function Auth() {
   const [email, setEmail] = useState('');
@@ -14,6 +40,12 @@ export function Auth() {
     
     if (!email) {
       setMessage('Please enter your email');
+      return;
+    }
+
+    // Check if email is allowed
+    if (!isEmailAllowed(email)) {
+      setMessage('This email is not authorized to access the system. Please contact an administrator.');
       return;
     }
 
@@ -48,6 +80,13 @@ export function Auth() {
           </div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome to Clarelations</h1>
           <p className="text-slate-600">Sign in with your email - no password needed</p>
+          
+          {import.meta.env.VITE_ALLOWED_EMAILS && import.meta.env.VITE_ALLOWED_EMAILS !== 'your@email.com' && (
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 text-sm rounded-lg border border-amber-200">
+              <ShieldAlert className="w-4 h-4" />
+              <span>Invite-only access</span>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
