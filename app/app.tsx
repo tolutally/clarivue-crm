@@ -1,21 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@components/ui/tabs';
-import { Users, TrendingUp } from 'lucide-react';
+import { Users, TrendingUp, LogOut } from 'lucide-react';
 import ContactList from '@components/ContactList';
 import ContactDetails from '@components/ContactDetails';
 import { DealsBoardContainer } from '../components/DealsBoardContainer';
 import DealDetails from '@components/DealDetails';
 import ErrorBoundary from '@components/ErrorBoundary';
 import { debugSupabase } from '../debug-supabase';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { Auth } from '@components/Auth';
+import { useMockData } from '@/lib/supabase';
+import { Button } from '@components/ui/button';
 
 type View = 'contacts' | 'contact-details' | 'deals' | 'deal-details';
 
-function App() {
+function AppContent() {
   console.log('App rendering...');
   
   const [view, setView] = useState<View>('contacts');
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const { user, loading, signOut } = useAuth();
   
   // Debug Supabase connection on app load
   useEffect(() => {
@@ -23,6 +28,20 @@ function App() {
   }, []);
   
   console.log('Current view:', view, 'selectedContactId:', selectedContactId);
+
+  // Show loading state
+  if (!useMockData && loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-slate-600">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show auth if not in mock mode and no user
+  if (!useMockData && !user) {
+    return <Auth />;
+  }
 
   const handleViewContact = useCallback((contactId: string) => {
     setSelectedContactId(contactId);
@@ -58,7 +77,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4">
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200/50">
             <TabsTrigger
@@ -77,6 +96,18 @@ function App() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+        
+        {!useMockData && user && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={signOut}
+            className="bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200/50"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        )}
       </div>
 
       {view === 'contacts' && <ContactList onViewContact={handleViewContact} />}
@@ -103,6 +134,14 @@ function App() {
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
