@@ -1,4 +1,4 @@
-import { useLoadAction } from '@quibakery/data';
+import { useLoadAction } from '../lib/quibakery-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Badge } from '@components/ui/badge';
@@ -24,7 +24,7 @@ type Props = {
  * simplified version but could be added with a DealForm similar to ContactForm.
  */
 export default function DealDetails({ dealId, onBack, onViewContact }: Props) {
-  const { data: deals = [], loading } = useLoadAction(loadDealByIdAction, [], { id: dealId });
+  const { data: deals = [], loading } = useLoadAction(loadDealByIdAction, [dealId], { dealId: dealId });
   const deal: DealWithContact | undefined = deals && deals[0] ? (deals[0] as DealWithContact) : undefined;
   const [isDeleting, setIsDeleting] = useState(false);
 

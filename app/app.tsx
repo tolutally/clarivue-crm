@@ -4,12 +4,14 @@ import { Users, TrendingUp, LogOut } from 'lucide-react';
 import ContactList from '@components/ContactList';
 import ContactDetails from '@components/ContactDetails';
 import { DealsBoardContainer } from '../components/DealsBoardContainer';
-import DealDetails from '@components/DealDetails';
+import DealDetailsPage from '@components/DealDetailsPage';
 import ErrorBoundary from '@components/ErrorBoundary';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { Auth } from '@components/Auth';
 import { useMockData } from '@/lib/supabase';
 import { Button } from '@components/ui/button';
+import { useLoadAction } from '@/lib/quibakery-data';
+import loadDealByIdAction from '@/actions/loadDealById';
 
 type View = 'contacts' | 'contact-details' | 'deals' | 'deal-details';
 
@@ -20,6 +22,16 @@ function AppContent() {
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const { user, loading, signOut } = useAuth();
+  
+  // Load selected deal for deal-details view
+  const { data: selectedDealData, loading: loadingSelectedDeal, refresh: refreshSelectedDeal } = useLoadAction(
+    loadDealByIdAction,
+    [selectedDealId],
+    { dealId: selectedDealId || '' }
+  );
+  const selectedDeal = selectedDealData && Array.isArray(selectedDealData) && selectedDealData.length > 0 
+    ? selectedDealData[0] 
+    : null;
   
   console.log('Current view:', view, 'selectedContactId:', selectedContactId);
 
@@ -122,11 +134,35 @@ function AppContent() {
       )}
 
       {view === 'deal-details' && selectedDealId && (
-        <DealDetails
-          dealId={selectedDealId}
-          onBack={handleBackToDeals}
-          onViewContact={handleViewContact}
-        />
+        <>
+          {loadingSelectedDeal ? (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-slate-600">Loading deal...</div>
+            </div>
+          ) : selectedDeal ? (
+            <DealDetailsPage
+              deal={selectedDeal}
+              onBack={handleBackToDeals}
+              onEdit={() => {
+                // Edit functionality - could open edit modal or navigate
+                console.log('Edit deal:', selectedDeal.id);
+              }}
+              onStageChange={(dealId, newStage) => {
+                // Handle stage change
+                console.log('Stage changed:', dealId, newStage);
+                refreshSelectedDeal();
+              }}
+              onDealUpdated={() => {
+                // Refresh deal data after updates
+                refreshSelectedDeal();
+              }}
+            />
+          ) : (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-slate-600">Deal not found</div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

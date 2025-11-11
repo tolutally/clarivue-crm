@@ -51,6 +51,7 @@ const activityColors: Record<string, string> = {
 
 function ActivityItem({ activity, isLast, onEdit, onDelete }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showFullTranscript, setShowFullTranscript] = useState(false);
   const [deleteActivity] = useMutateAction(deleteActivityAction);
 
   // Choose the appropriate icon and colour based on the activity type
@@ -103,7 +104,34 @@ function ActivityItem({ activity, isLast, onEdit, onDelete }: Props) {
             {activity.description}
           </p>
         )}
-        <p className="text-[11px] text-slate-400">
+        
+        {/* Transcript Summary */}
+        {activity.transcript_summary && (
+          <div className="mt-2 p-2 bg-indigo-50 border border-indigo-200 rounded-md">
+            <p className="text-xs text-indigo-900 leading-relaxed">
+              <strong className="font-semibold">Summary:</strong> {activity.transcript_summary}
+            </p>
+            {activity.transcript && (
+              <button
+                onClick={() => setShowFullTranscript(!showFullTranscript)}
+                className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium mt-1 inline-flex items-center gap-1"
+              >
+                {showFullTranscript ? '▼ Hide' : '▶ View Full Transcript'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Full Transcript (Expandable) */}
+        {showFullTranscript && activity.transcript && (
+          <div className="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-md max-h-[400px] overflow-y-auto">
+            <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+              {activity.transcript}
+            </p>
+          </div>
+        )}
+        
+        <p className="text-[11px] text-slate-400 mt-1">
           {format(new Date(activity.created_at), 'MMM d, yyyy • h:mm a')}
         </p>
       </div>

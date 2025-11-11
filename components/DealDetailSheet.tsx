@@ -60,9 +60,24 @@ export default function DealDetailSheet({ deal, open, onClose, onStageChange, on
     dealId: deal?.id 
   });
 
-  if (!deal) {
-    console.log('📋 SHEET: No deal provided, returning null');
+  // Don't show sheet if not open or no deal
+  if (!open) {
+    console.log('📋 SHEET: Not open, returning null');
     return null;
+  }
+
+  if (!deal) {
+    console.log('📋 SHEET: No deal provided but sheet is open, showing loading...');
+    // Show loading state instead of returning null
+    return (
+      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+        <div className="bg-white w-[600px] rounded-lg shadow-xl p-8">
+          <div className="text-center">
+            <p className="text-slate-500">Loading deal...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleStageChange = (newStage: string) => {
@@ -152,10 +167,8 @@ export default function DealDetailSheet({ deal, open, onClose, onStageChange, on
   };
 
   return (
-    <>
-      {open && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white w-[600px] max-h-[90vh] rounded-lg shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <div className="bg-white w-[600px] max-h-[90vh] rounded-lg shadow-xl overflow-hidden">
             {/* Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-xl font-bold text-slate-900">{deal.name}</h2>
@@ -394,7 +407,5 @@ export default function DealDetailSheet({ deal, open, onClose, onStageChange, on
             </div>
           </div>
         </div>
-      )}
-    </>
   );
 }

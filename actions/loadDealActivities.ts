@@ -1,23 +1,40 @@
-import { action } from '@uibakery/data';
+import { supabase, useMockData } from '../lib/supabase';
 
-function loadDealActivities() {
-  return action('loadDealActivities', 'SQL', {
-    databaseName: 'crm_contacts_db_2',
-    query: `
-      SELECT
-        id,
-        contact_id,
-        deal_id,
-        type,
-        title,
-        description,
-        created_at,
-        created_by
-      FROM activities
-      WHERE deal_id = {{params.dealId}}::bigint
-      ORDER BY created_at DESC;
-    `,
-  });
+// Mock activities for testing
+const mockActivities = [
+  {
+    id: '1',
+    contact_id: null,
+    deal_id: '1',
+    type: 'note',
+    title: 'Follow-up call scheduled',
+    description: 'Scheduled follow-up call for next week to discuss proposal',
+    created_at: new Date().toISOString(),
+    created_by: null,
+  },
+];
+
+async function loadDealActivities({ dealId }: { dealId: string }) {
+  console.log('loadDealActivities called with dealId:', dealId);
+  
+  if (useMockData) {
+    console.log('Using mock activities data');
+    return mockActivities.filter(activity => activity.deal_id === dealId);
+  }
+
+  const { data, error } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('deal_id', dealId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error loading deal activities:', error);
+    throw error;
+  }
+
+  console.log('Loaded deal activities:', data);
+  return data || [];
 }
 
 export default loadDealActivities;

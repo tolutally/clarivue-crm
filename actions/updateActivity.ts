@@ -5,15 +5,19 @@ async function updateActivity({
   type,
   title,
   description,
+  transcript,
+  transcript_summary,
   created_at,
 }: {
   id: string;
   type: string;
   title: string;
   description?: string;
+  transcript?: string;
+  transcript_summary?: string;
   created_at?: string;
 }) {
-  console.log('updateActivity called with:', { id, type, title, description, created_at });
+  console.log('updateActivity called with:', { id, type, title, description, transcript, transcript_summary, created_at });
   
   if (useMockData) {
     console.log('Updating mock activity - not implemented');
@@ -24,6 +28,8 @@ async function updateActivity({
     type,
     title,
     description: description || null,
+    transcript: transcript || null,
+    transcript_summary: transcript_summary || null,
   };
 
   if (created_at) {

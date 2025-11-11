@@ -29,11 +29,14 @@ import { FieldValues } from 'react-hook-form';
 /*
  * Schema for creating or editing an activity. Requires type and title; description is optional
  * and activityDate is required. Accepts date strings (ISO) for activityDate.
+ * Transcript and transcript_summary are optional and only relevant for calls/meetings.
  */
 const activitySchema = z.object({
   type: z.string().min(1, { message: 'Type is required' }),
   title: z.string().min(1, { message: 'Title is required' }),
   description: z.string().optional(),
+  transcript: z.string().optional(),
+  transcript_summary: z.string().optional(),
   activityDate: z.string().min(1, { message: 'Date and time is required' }),
 });
 
@@ -74,13 +77,16 @@ export default function LogActivityDialog({
       type: editActivity?.type || initialType || '',
       title: editActivity?.title || '',
       description: editActivity?.description || '',
+      transcript: editActivity?.transcript || '',
+      transcript_summary: editActivity?.transcript_summary || '',
       activityDate: editActivity?.created_at
         ? new Date(editActivity.created_at).toISOString().slice(0, 16)
         : new Date().toISOString().slice(0, 16),
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit, reset, watch } = form;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const selectedType = watch('type');
 
   useEffect(() => {
     // Reset form when dialog opens or editActivity changes
@@ -88,6 +94,8 @@ export default function LogActivityDialog({
       type: editActivity?.type || '',
       title: editActivity?.title || '',
       description: editActivity?.description || '',
+      transcript: editActivity?.transcript || '',
+      transcript_summary: editActivity?.transcript_summary || '',
       activityDate: editActivity?.created_at
         ? new Date(editActivity.created_at).toISOString().slice(0, 16)
         : '',
@@ -116,6 +124,8 @@ export default function LogActivityDialog({
           type: data.type,
           title: data.title,
           description: data.description,
+          transcript: data.transcript,
+          transcript_summary: data.transcript_summary,
           created_at: isoDate,
         });
       } else {
@@ -126,6 +136,8 @@ export default function LogActivityDialog({
           type: data.type,
           title: data.title,
           description: data.description,
+          transcript: data.transcript,
+          transcript_summary: data.transcript_summary,
           created_at: isoDate,
         });
       }
@@ -144,7 +156,7 @@ export default function LogActivityDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v: boolean) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editActivity ? 'Edit Activity' : 'Log Activity'}</DialogTitle>
           <DialogDescription>
@@ -208,6 +220,54 @@ export default function LogActivityDialog({
                 </FormItem>
               )}
             />
+
+            {/* Transcript - Only show for calls and meetings */}
+            {(selectedType === 'call' || selectedType === 'meeting') && (
+              <>
+                <FormField
+                  control={control}
+                  name="transcript"
+                  render={({ field }: { field: FieldValues }) => (
+                    <FormItem>
+                      <FormLabel>Call Transcript (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Paste the full transcript here. This will be used by AI to provide insights..." 
+                          className="min-h-[120px] max-h-[300px] resize-y" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Full transcript for AI analysis. This can be very long.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={control}
+                  name="transcript_summary"
+                  render={({ field }: { field: FieldValues }) => (
+                    <FormItem>
+                      <FormLabel>Transcript Summary (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Brief summary of the key points..." 
+                          className="min-h-[80px]" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <p className="text-xs text-slate-500 mt-1">
+                        A brief summary shown in the timeline. Future: AI will generate this automatically.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
             {/* Date/time */}
             <FormField
               control={control}

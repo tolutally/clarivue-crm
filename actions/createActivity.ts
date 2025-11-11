@@ -9,6 +9,8 @@ async function createActivity({
   type,
   title,
   description,
+  transcript,
+  transcript_summary,
   created_at,
 }: {
   contact_id: string | null;
@@ -16,10 +18,12 @@ async function createActivity({
   type: string;
   title: string;
   description?: string;
+  transcript?: string;
+  transcript_summary?: string;
   created_by?: string; // Accept but ignore for compatibility
   created_at?: string;
 }) {
-  console.log('createActivity called with:', { contact_id, deal_id, type, title, description, created_at });
+  console.log('createActivity called with:', { contact_id, deal_id, type, title, description, transcript, transcript_summary, created_at });
   console.log('useMockData:', useMockData);
   
   if (useMockData) {
@@ -45,6 +49,8 @@ async function createActivity({
     type,
     title,
     description: description || null,
+    transcript: transcript || null,
+    transcript_summary: transcript_summary || null,
   };
 
   // Add contact_id or deal_id

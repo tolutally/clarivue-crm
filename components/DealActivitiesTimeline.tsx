@@ -30,11 +30,11 @@ function DealActivitiesTimeline({ dealId, contactId, dealTitle }: Props) {
 
   // Load activities for this deal
   const { data: activities, loading, refresh } =
-    useLoadAction(loadDealActivitiesAction, [], {
+    useLoadAction(loadDealActivitiesAction, [dealId], {
       dealId: dealId,
     });
 
-  const activityList: Activity[] = (activities as Activity[]) || [];
+  const activityList: Activity[] = Array.isArray(activities) ? (activities as Activity[]) : [];
 
   const handleActivityLogged = () => {
     setIsLoggingActivity(false);

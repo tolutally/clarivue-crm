@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLoadAction } from '@uibakery/data';
+import { useState, useEffect } from 'react';
+import { useLoadAction } from '../lib/quibakery-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { Badge } from '@components/ui/badge';
@@ -22,13 +22,24 @@ import {
 } from 'lucide-react';
 import loadContactByIdAction from '@actions/loadContactById';
 import loadDealsByContactAction from '@actions/loadDealsByContact';
+import loadDealByIdAction from '@actions/loadDealById';
 import deleteContactAction from '@actions/deleteContact';
+import updateDealStageAction from '@actions/updateDealStage';
 import ContactForm from '@components/ContactForm';
 import ActivitiesTimeline from '@components/ActivitiesTimeline';
 import CreateDealSheet from '@components/CreateDealSheet';
+import DealDetailSheet from '@components/DealDetailSheet';
 import { Contact } from '../types/contact';
 import { Deal } from '../types/deal';
 import { format } from 'date-fns';
+
+const STAGES = [
+  { id: 'new', title: 'New' },
+  { id: 'qualified', title: 'Qualified' },
+  { id: 'negotiating', title: 'Negotiating' },
+  { id: 'closed_won', title: 'Closed Won' },
+  { id: 'closed_lost', title: 'Closed Lost' },
+];
 
 /**
  * Displays the details of a single contact along with their associated deals and activities.
@@ -50,6 +61,15 @@ type Props = {
 };
 
 export default function ContactDetails({ contactId, onBack, onViewDeal }: Props) {
+  // Local UI state - must be declared before hooks that use them
+  const [isEditing, setIsEditing] = useState(false);
+  const [isCreateDealOpen, setIsCreateDealOpen] = useState(false);
+  const [isLoggingActivity, setIsLoggingActivity] = useState(false);
+  const [initialActivityType, setInitialActivityType] = useState<'note' | 'call' | 'meeting'>('note');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const [isDealSheetOpen, setIsDealSheetOpen] = useState(false);
+
   // Load the contact record and the deals for this contact.
   const {
     data: contacts,
@@ -61,6 +81,41 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
     refresh: refreshDeals,
   } = useLoadAction(loadDealsByContactAction, [], { contactId });
   
+  // Manually load selected deal to avoid calling action with empty ID
+  const [selectedDealArray, setSelectedDealArray] = useState<any>(null);
+  const [loadingDeal, setLoadingDeal] = useState(false);
+  
+  useEffect(() => {
+    if (!selectedDealId) {
+      setSelectedDealArray(null);
+      return;
+    }
+    
+    const loadDeal = async () => {
+      console.log('🔄 Loading deal with ID:', selectedDealId);
+      setLoadingDeal(true);
+      try {
+        const result = await loadDealByIdAction({ dealId: selectedDealId });
+        console.log('✅ Deal loaded:', result);
+        setSelectedDealArray(result);
+      } catch (error) {
+        console.error('❌ Error loading deal:', error);
+        setSelectedDealArray(null);
+      } finally {
+        setLoadingDeal(false);
+      }
+    };
+    
+    loadDeal();
+  }, [selectedDealId]);
+  
+  const refreshSelectedDeal = async () => {
+    if (selectedDealId) {
+      const result = await loadDealByIdAction({ dealId: selectedDealId });
+      setSelectedDealArray(result);
+    }
+  };
+  
   console.log('ContactDetails data:', { 
     contactId, 
     loading, 
@@ -71,15 +126,22 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
     dealsIsArray: Array.isArray(deals)
   });
 
-  // Local UI state: editing contact details or adding a new deal.
-  const [isEditing, setIsEditing] = useState(false);
-  const [isCreateDealOpen, setIsCreateDealOpen] = useState(false);
-  const [isLoggingActivity, setIsLoggingActivity] = useState(false);
-  const [initialActivityType, setInitialActivityType] = useState<'note' | 'call' | 'meeting'>('note');
-  const [isDeleting, setIsDeleting] = useState(false);
-
   // The contact data should be directly available
   const contact: Contact | null = contacts ? (contacts as Contact) : null;
+  const selectedDeal = selectedDealArray && Array.isArray(selectedDealArray) && selectedDealArray.length > 0 
+    ? selectedDealArray[0] 
+    : null;
+  
+  console.log('🎯 Selected Deal State:', {
+    selectedDealId,
+    isDealSheetOpen,
+    selectedDealArray,
+    selectedDealArrayType: typeof selectedDealArray,
+    selectedDealArrayIsArray: Array.isArray(selectedDealArray),
+    selectedDealArrayLength: selectedDealArray?.length,
+    selectedDeal,
+    loadingDeal
+  });
   
   console.log('Contact data:', { contact, contacts, loading });
   console.log('🎨 ContactDetails state:', { 
@@ -129,6 +191,44 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  /**
+   * Called when deal stage is changed from the detail sheet.
+   */
+  const handleDealStageChange = async (dealId: string, newStage: string) => {
+    try {
+      await updateDealStageAction({ dealId, stage: newStage });
+      // Refresh both the deals list and the selected deal
+      refreshDeals();
+      refreshSelectedDeal();
+    } catch (error) {
+      console.error('Error updating deal stage:', error);
+      alert('Failed to update deal stage. Please try again.');
+    }
+  };
+
+  /**
+   * Called when user clicks edit on the deal detail sheet.
+   */
+  const handleEditDeal = () => {
+    console.log('🟣 handleEditDeal called, selectedDealId:', selectedDealId);
+    // Close the detail sheet and navigate to deals tab to edit
+    setIsDealSheetOpen(false);
+    if (selectedDealId) {
+      console.log('🟣 Calling onViewDeal with dealId:', selectedDealId);
+      onViewDeal(selectedDealId);
+    } else {
+      console.warn('⚠️ No selectedDealId to view!');
+    }
+  };
+
+  /**
+   * Called after deal is updated to refresh data.
+   */
+  const handleDealUpdated = () => {
+    refreshDeals();
+    refreshSelectedDeal();
   };
 
   // Render a skeleton while data is loading.
@@ -289,12 +389,22 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
                         className="p-4 border-b last:border-none flex justify-between items-center"
                       >
                         <div className="flex flex-col">
-                          <span className="font-medium text-slate-900">{deal.title}</span>
-                          <span className="text-slate-500">
-                            ${deal.amount ? deal.amount.toLocaleString() : '0'}
-                          </span>
+                          <span className="font-medium text-slate-900">{deal.name}</span>
+                          <span className="text-slate-500">{deal.use_case}</span>
+                          <Badge variant="outline" className="w-fit mt-1">
+                            {STAGES.find(s => s.id === deal.stage)?.title || deal.stage}
+                          </Badge>
                         </div>
-                        <Button size="sm" variant="ghost" onClick={() => onViewDeal(deal.id)}>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => {
+                            console.log('🔵 View button clicked for deal:', deal.id);
+                            setSelectedDealId(deal.id);
+                            setIsDealSheetOpen(true);
+                            console.log('🔵 State set - dealId:', deal.id, 'sheetOpen: true');
+                          }}
+                        >
                           View
                         </Button>
                       </div>
@@ -419,6 +529,29 @@ export default function ContactDetails({ contactId, onBack, onViewDeal }: Props)
           </Card>
         </div>
       </div>
+
+      {/* Deal Detail Sheet */}
+      {(() => {
+        console.log('🟢 Rendering DealDetailSheet with:', { 
+          deal: selectedDeal, 
+          open: isDealSheetOpen,
+          dealId: selectedDeal?.id,
+          dealName: selectedDeal?.name
+        });
+        return null;
+      })()}
+      <DealDetailSheet
+        deal={selectedDeal}
+        open={isDealSheetOpen}
+        onClose={() => {
+          console.log('🔴 Closing deal sheet');
+          setIsDealSheetOpen(false);
+          setSelectedDealId(null);
+        }}
+        onStageChange={handleDealStageChange}
+        onEdit={handleEditDeal}
+        onDealUpdated={handleDealUpdated}
+      />
     </div>
   );
 }
