@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useLoadAction } from '@uibakery/data';
+import { useState, useEffect } from 'react';
 import { Badge } from '@components/ui/badge';
 import { Skeleton } from '@components/ui/skeleton';
 import { Clock } from 'lucide-react';
@@ -42,13 +41,26 @@ function ActivitiesTimeline({
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
 
   // Load activities for this contact.  The `useLoadAction` hook comes from
-  // UI Bakery's data layer and returns activities along with loading state
-  // and a refresh function.
-  const { data: activities, loading, refresh } =
-    useLoadAction(loadActivitiesAction, [], {
-      contactId: contactId,
-    });
+  // Load activities for this contact using a custom hook implementation
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      const result = await loadActivitiesAction({ contactId });
+      setActivities(result || []);
+    } catch (error) {
+      console.error('Failed to load activities:', error);
+      setActivities([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
+  }, [contactId]);
   console.log('ActivitiesTimeline:', { activities, loading });
 
   // Ensure we always treat activities as an array of Activity objects

@@ -21,6 +21,7 @@ export type Deal = {
   use_case: string;
   stage: 'new' | 'qualified' | 'negotiating' | 'closed_won' | 'closed_lost';
   signal: 'positive' | 'neutral' | 'negative';
+  signal_rationale?: string | null; // AI-generated reasoning for the signal
   description: string;
   attachments?: DealAttachment[] | null;
   notes?: DealNote[] | null;

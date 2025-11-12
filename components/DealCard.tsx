@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Card, CardContent, CardHeader } from '@components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { User, Building2, Target } from 'lucide-react';
+import SignalBadge from './SignalBadge';
 import type { DealWithContact } from '../types/deal';
 
 /*
@@ -23,27 +24,6 @@ const STAGES = [
   { id: 'closed_lost', title: 'Closed Lost', color: 'bg-gradient-to-r from-rose-400 to-pink-500', dotColor: 'bg-rose-500' },
 ];
 
-const signalColors: Record<'positive' | 'neutral' | 'negative', { bg: string; text: string; dot: string; border: string }> = {
-  positive: {
-    bg: 'bg-gradient-to-br from-emerald-50 to-teal-50',
-    text: 'text-emerald-700',
-    dot: 'bg-gradient-to-r from-emerald-400 to-teal-500 shadow-emerald-200',
-    border: 'border-emerald-200/60'
-  },
-  neutral: {
-    bg: 'bg-gradient-to-br from-amber-50 to-yellow-50',
-    text: 'text-amber-700',
-    dot: 'bg-gradient-to-r from-amber-400 to-yellow-500 shadow-amber-200',
-    border: 'border-amber-200/60'
-  },
-  negative: {
-    bg: 'bg-gradient-to-br from-rose-50 to-pink-50',
-    text: 'text-rose-700',
-    dot: 'bg-gradient-to-r from-rose-400 to-pink-500 shadow-rose-200',
-    border: 'border-rose-200/60'
-  },
-};
-
 function DealCard({ deal, onClick, onStageChange }: Props) {
   const handleStageChange = (newStage: string) => {
     onStageChange(deal.id, newStage);
@@ -58,7 +38,6 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
     onClick();
   };
 
-  const signalStyle = signalColors[deal.signal];
   const currentStage = STAGES.find(s => s.id === deal.stage);
 
   return (
@@ -104,13 +83,11 @@ function DealCard({ deal, onClick, onStageChange }: Props) {
       </CardHeader>
       
       <CardContent className="px-5 pb-5 space-y-3.5">
-        {/* Signal indicator badge */}
-        <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-xl border ${signalStyle.border} ${signalStyle.bg} shadow-md w-fit backdrop-blur-sm`}>
-          <div className={`w-2.5 h-2.5 rounded-full ${signalStyle.dot} shadow-lg animate-pulse`}></div>
-          <span className={`text-xs font-bold uppercase tracking-wider ${signalStyle.text}`}>
-            {deal.signal}
-          </span>
-        </div>
+        {/* Signal indicator badge with AI rationale */}
+        <SignalBadge 
+          signal={deal.signal} 
+          rationale={deal.signal_rationale}
+        />
 
         {/* Use case / description */}
         <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-xl border border-slate-100">

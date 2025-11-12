@@ -10,12 +10,14 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 ## 🚀 Features
 
 ### Contact Management
+
 - **Comprehensive Contact Profiles** - Store and manage detailed contact information including name, email, phone, company, and position
 - **Company & Position Tracking** - Link contacts to companies with role information
 - **Contact-Deal Relationships** - Seamlessly connect contacts to deals and track associated opportunities
 - **Quick Actions** - Add notes and log activities directly from contact details
 
 ### Deal Pipeline Management
+
 - **Kanban Board View** - Visual pipeline with intuitive drag-and-drop deal management
 - **Multiple Deal Stages**:
   - 🆕 New - Fresh opportunities
@@ -29,6 +31,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 - **Deal Metrics** - Track creation date, last update, and stage progression
 
 ### File Management
+
 - **Document Attachments** - Upload and manage files for any deal
 - **Supabase Storage Integration** - Secure, scalable file storage with CDN delivery
 - **File Preview & Download** - Quick access to uploaded documents
@@ -36,6 +39,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 - **Attachment Sidebar** - Clean, organized view of all deal files
 
 ### Notes & Activities
+
 - **Rich Note System** - Add, edit, and delete notes with full timestamps
 - **Activity Logging** - Track calls and other interactions
 - **Audit Trail** - Maintain history of deleted notes for compliance
@@ -43,6 +47,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 - **Quick Add Interface** - Rapidly capture important information during calls
 
 ### Modern UI/UX
+
 - **Responsive Design** - Works seamlessly on desktop and tablet
 - **Dark Mode Ready** - Prepared for theme switching
 - **Smooth Animations** - Polished transitions and interactions
@@ -52,6 +57,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **React 18.3** - Modern UI library with hooks and concurrent features
 - **TypeScript 5.5** - Type-safe development with full IntelliSense
 - **Vite 5** - Lightning-fast build tool and dev server with HMR
@@ -61,6 +67,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
 - **React DnD** - Drag and drop functionality for kanban board
 
 ### Backend & Database
+
 - **Supabase** - Complete Backend-as-a-Service (BaaS)
   - PostgreSQL database with full SQL support
   - Row Level Security (RLS) for data protection
@@ -69,6 +76,7 @@ A modern, AI-ready Customer Relationship Management (CRM) system built with Reac
   - Built-in authentication (ready to implement)
 
 ### Development Tools
+
 - **ESLint** - Code quality and consistency
 - **PostCSS** - Advanced CSS processing
 - **TypeScript** - Compile-time type checking
@@ -113,24 +121,28 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 Execute these SQL files in your [Supabase SQL Editor](https://supabase.com/dashboard/project/_/sql) in order:
 
 #### Step 1: Create Initial Schema
+
 ```sql
 -- Run: supabase-schema.sql
 -- Creates contacts, deals, and activities tables with indexes
 ```
 
 #### Step 2: Update Deals Table
+
 ```sql
 -- Run: update-deals-table.sql
 -- Adds name, use_case, signal columns and removes old columns
 ```
 
 #### Step 3: Add Notes System
+
 ```sql
 -- Run: supabase/migrations/20251109120000_add_notes_to_deals.sql
 -- Adds JSONB notes column for note management
 ```
 
 #### Step 4: Set Up File Storage
+
 ```sql
 -- Run: supabase/migrations/20251109090812_storage_setup.sql
 -- Creates deal-attachments bucket and adds attachments column
@@ -239,6 +251,7 @@ clarelations/
 ## 🔐 Security Features
 
 ### Row Level Security (RLS)
+
 Current configuration (customize for production):
 
 ```sql
@@ -259,6 +272,7 @@ WITH CHECK (true);
 ```
 
 ### Production Security Recommendations
+
 1. **Enable Authentication** - Implement Supabase Auth
 2. **User-Based RLS** - Restrict access to user's own data
 3. **Role-Based Access** - Admin vs. User permissions
@@ -268,6 +282,7 @@ WITH CHECK (true);
 ## 📊 Database Schema
 
 ### Contacts Table
+
 ```sql
 CREATE TABLE contacts (
   id BIGSERIAL PRIMARY KEY,
@@ -288,6 +303,7 @@ CREATE TABLE contacts (
 ```
 
 ### Deals Table
+
 ```sql
 CREATE TABLE deals (
   id BIGSERIAL PRIMARY KEY,
@@ -306,6 +322,7 @@ CREATE TABLE deals (
 ```
 
 ### Activities Table
+
 ```sql
 CREATE TABLE activities (
   id BIGSERIAL PRIMARY KEY,
@@ -319,6 +336,7 @@ CREATE TABLE activities (
 ```
 
 ### Storage Buckets
+
 - **deal-attachments** - Public bucket for file storage
 
 ## 🎨 UI Components
@@ -346,6 +364,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 ## 📝 Key Features Deep Dive
 
 ### Notes System
+
 - **Add Notes** - Quick capture with automatic timestamps
 - **Edit Notes** - Inline editing with updated_at tracking
 - **Delete Notes** - Soft delete with deleted_at timestamp for audit trail
@@ -353,6 +372,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 - **Author Tracking** - Record who created each note (ready for auth)
 
 ### File Attachments
+
 - **Upload Flow**:
   1. User selects file via input
   2. File validated (size, type)
@@ -364,6 +384,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 - **Storage**: Files organized by deal ID in folders
 
 ### Drag & Drop Kanban
+
 - **Drag Deal Cards** between stage columns
 - **Real-time Updates** to database
 - **Optimistic UI** for instant feedback
@@ -373,31 +394,38 @@ Built with **shadcn/ui** for consistent, accessible design:
 ## 🐛 Troubleshooting
 
 ### Files Not Uploading
+
 **Error:** "new row violates row-level security policy"
 
 **Solution:** Run the storage policies SQL (see step 5 above)
 
 ### Environment Variables Not Loading
+
 **Issue:** App shows "Using mock data mode"
 
-**Solution:** 
+**Solution:**
+
 1. Check `.env.local` exists in project root
 2. Verify variable names start with `VITE_`
 3. Restart dev server: `npm run dev`
 
 ### Database Connection Issues
+
 **Issue:** "Failed to fetch" or connection errors
 
 **Solution:**
+
 1. Check Supabase project is active
 2. Verify credentials in `.env.local`
 3. Check RLS policies are created
 4. Ensure tables exist (run migrations)
 
 ### Attachments Not Showing After Upload
+
 **Issue:** Files upload but don't appear when viewing deal
 
 **Solution:**
+
 1. Check `loadDealById.ts` includes `d.attachments` in SELECT
 2. Verify attachments column is JSONB (not TEXT[])
 3. Run: `fix-attachments-column.sql`
@@ -405,6 +433,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 ## 🚧 Roadmap
 
 ### Phase 1 (Completed ✅)
+
 - ✅ Contact management system
 - ✅ Deal pipeline with Kanban board
 - ✅ File attachments with Supabase Storage
@@ -414,6 +443,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 - ✅ Drag and drop deal management
 
 ### Phase 2 (In Progress 🔄)
+
 - [ ] User authentication with Supabase Auth
 - [ ] User-specific data access with RLS
 - [ ] Email integration for contact communication
@@ -422,6 +452,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 - [ ] Export functionality (CSV, PDF)
 
 ### Phase 3 (Planned 📋)
+
 - [ ] AI-powered deal insights
 - [ ] Automated email suggestions
 - [ ] Risk prediction and scoring
@@ -432,6 +463,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 - [ ] Audit logs and reporting
 
 ### Phase 4 (Future 🔮)
+
 - [ ] Mobile native apps (iOS/Android)
 - [ ] API for third-party integrations
 - [ ] Webhook support
@@ -444,6 +476,7 @@ Built with **shadcn/ui** for consistent, accessible design:
 Contributions are welcome! Here's how to get started:
 
 ### Development Workflow
+
 1. **Fork** the repository
 2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
 3. **Make your changes** with clear, focused commits
@@ -454,6 +487,7 @@ Contributions are welcome! Here's how to get started:
 8. **Open a Pull Request** with clear description
 
 ### Code Style
+
 - Use TypeScript for all new code
 - Follow existing component patterns
 - Use Tailwind CSS for styling
@@ -461,7 +495,9 @@ Contributions are welcome! Here's how to get started:
 - Keep functions small and focused
 
 ### Commit Messages
+
 Use conventional commits format:
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `docs:` Documentation changes
@@ -513,7 +549,7 @@ Need help? Here's how to get support:
 - 📖 Check the [Documentation](docs/)
 - 🐛 Report bugs via [GitHub Issues](https://github.com/yourusername/clarelations/issues)
 - 💬 Join discussions in [GitHub Discussions](https://github.com/yourusername/clarelations/discussions)
-- 📧 Email: support@clarelations.com
+- 📧 Email: <support@clarelations.com>
 
 ## 🔗 Useful Links
 

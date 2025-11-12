@@ -79,6 +79,21 @@ async function createActivity({
   }
 
   console.log('✅ Successfully created activity in Supabase:', data);
+  
+  // Trigger deal signal analysis if this activity is associated with a deal
+  if (deal_id && !useMockData) {
+    console.log(`🎯 Triggering signal analysis for deal: ${deal_id}`);
+    // Fire and forget - don't wait for signal analysis to complete
+    fetch('/api/analyze-deal-signal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dealId: deal_id }),
+    })
+      .then(res => res.json())
+      .then(result => console.log(`✅ Deal signal updated: ${result.signal} - ${result.rationale}`))
+      .catch(err => console.error('⚠️ Failed to update deal signal:', err));
+  }
+  
   return data;
 }
 

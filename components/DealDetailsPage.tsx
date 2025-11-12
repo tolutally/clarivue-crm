@@ -10,6 +10,7 @@ import { Badge } from '@components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { Input } from '@components/ui/input';
 import { Textarea } from '@components/ui/textarea';
+import SignalBadge from './SignalBadge';
 import { 
   ArrowLeft, 
   Edit3, 
@@ -33,10 +34,12 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import updateDealAction from '../actions/updateDeal';
+import deleteDealAction from '../actions/deleteDeal';
 import addAttachmentAction from '../actions/addAttachment';
 import removeAttachmentAction from '../actions/removeAttachment';
 import loadContactsAction from '../actions/loadContacts';
 import { addDealNote, updateDealNote, deleteDealNote } from '../actions/updateDealNotes';
+import { DealChatAssistant } from './DealChatAssistant';
 import type { Deal, DealWithContact, DealAttachment, DealNote } from '../types/deal';
 import type { Contact } from '../types/contact';
 
@@ -47,27 +50,6 @@ const STAGES = [
   { id: 'closed_won', title: 'Closed Won', color: 'bg-emerald-500' },
   { id: 'closed_lost', title: 'Closed Lost', color: 'bg-rose-500' },
 ];
-
-const signalColors: Record<'positive' | 'neutral' | 'negative', { bg: string; text: string; dot: string; label: string }> = {
-  positive: {
-    bg: 'bg-emerald-50 border-emerald-200',
-    text: 'text-emerald-800',
-    dot: 'bg-emerald-500',
-    label: 'Positive Signal'
-  },
-  neutral: {
-    bg: 'bg-slate-50 border-slate-200',
-    text: 'text-slate-700',
-    dot: 'bg-slate-400',
-    label: 'Neutral Signal'
-  },
-  negative: {
-    bg: 'bg-rose-50 border-rose-200',
-    text: 'text-rose-800',
-    dot: 'bg-rose-500',
-    label: 'Negative Signal'
-  },
-};
 
 const formatCurrency = (amount: number) => {
   if (amount >= 1000000) {
@@ -118,10 +100,12 @@ export default function DealDetailsPage({
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteContent, setEditingNoteContent] = useState('');
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const currentStage = STAGES.find(stage => stage.id === editedDeal.stage);
-  const signalStyle = signalColors[editedDeal.signal];
 
   // Load contacts when editing starts
   useEffect(() => {
@@ -185,15 +169,28 @@ export default function DealDetailsPage({
     }
   };
 
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteDealAction({ dealId: deal.id });
+      console.log('✅ Deal deleted successfully');
+      // Go back to deals board
+      onBack();
+      // Trigger refresh
+      onDealUpdated();
+    } catch (error) {
+      console.error('❌ Error deleting deal:', error);
+      alert('Failed to delete deal. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const handleStageChange = (newStage: string) => {
     const stage = newStage as Deal['stage'];
     setEditedDeal(prev => ({ ...prev, stage }));
     onStageChange(deal.id, newStage);
-  };
-
-  const handleSignalChange = (newSignal: string) => {
-    const signal = newSignal as Deal['signal'];
-    setEditedDeal(prev => ({ ...prev, signal }));
   };
 
   const handleContactChange = (contactId: string) => {
@@ -362,36 +359,40 @@ export default function DealDetailsPage({
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <Button 
-                onClick={handleBackClick} 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full hover:bg-slate-100 flex-shrink-0"
-              >
+        <div className="bg-white border-b border-slate-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button onClick={handleBackClick} variant="ghost" size="icon" className="rounded-full hover:bg-slate-100">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div className="flex items-center gap-3 min-w-0">
-                <h1 className="text-2xl font-bold text-slate-900 truncate">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-slate-900">
                   {isEditing ? (
                     <Input
                       value={editedDeal.name}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedDeal(prev => ({ ...prev, name: e.target.value }))}
-                      className="text-2xl font-bold border-none p-0 h-auto focus-visible:ring-0 bg-transparent max-w-md"
+                      className="text-2xl font-bold border-none p-0 h-auto focus-visible:ring-0 bg-transparent"
                     />
                   ) : (
                     deal.name
                   )}
                 </h1>
-                <Badge variant="secondary" className={`${currentStage?.color} text-white border-0 flex-shrink-0`}>
+                <Badge variant="secondary" className={`${currentStage?.color} text-white border-0`}>
                   {currentStage?.title}
                 </Badge>
               </div>
             </div>
             
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              {/* AI Chat Button */}
+              <Button
+                onClick={() => setShowAIChat(true)}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Ask AI Assistant
+              </Button>
+              
               {isEditing && (
                 <>
                   <Button 
@@ -409,10 +410,20 @@ export default function DealDetailsPage({
                 </>
               )}
               {!isEditing && (
-                <Button onClick={handleEditToggle} variant="outline" className="border-slate-300 hover:bg-slate-50">
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
+                <>
+                  <Button onClick={handleEditToggle} variant="outline" className="border-slate-300 hover:bg-slate-50">
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button 
+                    onClick={() => setShowDeleteConfirm(true)} 
+                    variant="outline" 
+                    className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -487,47 +498,20 @@ export default function DealDetailsPage({
                     )}
                   </div>
 
-                  {/* Deal Signal */}
+                  {/* Deal Signal - AI Controlled */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">Deal Signal</label>
-                    {isEditing ? (
-                      <Select 
-                        value={editedDeal.signal} 
-                        onValueChange={handleSignalChange}
-                      >
-                        <SelectTrigger className="border-slate-200 focus:border-blue-500">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${signalStyle.dot}`}></div>
-                            <span className="text-slate-900">{signalStyle.label}</span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="positive" className="hover:bg-slate-50">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                              <span>Positive Signal</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="neutral" className="hover:bg-slate-50">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-slate-400"></div>
-                              <span>Neutral Signal</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="negative" className="hover:bg-slate-50">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                              <span>Negative Signal</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <div className={`inline-flex items-center gap-3 px-4 py-3 rounded-lg border text-sm w-full ${signalStyle.bg} ${signalStyle.text}`}>
-                        <div className={`w-3 h-3 rounded-full ${signalStyle.dot} shadow-sm`} />
-                        <span className="font-medium">{signalStyle.label}</span>
-                      </div>
-                    )}
+                    <label className="block text-sm font-medium text-slate-600 mb-2">
+                      Deal Signal
+                      <Badge variant="outline" className="ml-2 text-xs bg-purple-50 text-purple-700 border-purple-200">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        AI Determined
+                      </Badge>
+                    </label>
+                    <SignalBadge 
+                      signal={editedDeal.signal}
+                      rationale={deal.signal_rationale}
+                      className="w-full"
+                    />
                   </div>
                 </div>
               </div>
@@ -689,44 +673,50 @@ export default function DealDetailsPage({
               <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
                 <div className="border-b border-slate-100 px-6 py-4">
                   <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                    <Sparkles className="h-5 w-5 text-purple-600" />
                     AI Assistant
                   </h2>
                 </div>
                 <div className="p-6">
                   <p className="text-sm text-slate-600 mb-4">
-                    Get AI-powered insights and suggestions for this deal.
+                    Ask me anything about this deal - I have access to all activities, notes, and transcripts.
                   </p>
                   
-                  <div className="space-y-3">
-                    <div className="rounded-lg border border-dashed border-emerald-200 bg-emerald-50/50 px-4 py-3">
-                      <p className="text-xs text-emerald-700 font-medium">
-                        💡 AI is not enabled yet in this workspace
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Example prompts</p>
-                      <div className="flex flex-col gap-2">
-                        <Button size="sm" variant="outline" disabled className="justify-start text-left h-auto py-3 border-slate-200 hover:bg-slate-50">
-                          <div className="text-left">
-                            <div className="font-medium text-xs text-slate-700">Summarize this deal</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Get key insights and status</div>
-                          </div>
-                        </Button>
-                        <Button size="sm" variant="outline" disabled className="justify-start text-left h-auto py-3 border-slate-200 hover:bg-slate-50">
-                          <div className="text-left">
-                            <div className="font-medium text-xs text-slate-700">Suggest follow-up email</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Draft personalized outreach</div>
-                          </div>
-                        </Button>
-                        <Button size="sm" variant="outline" disabled className="justify-start text-left h-auto py-3 border-slate-200 hover:bg-slate-50">
-                          <div className="text-left">
-                            <div className="font-medium text-xs text-slate-700">Identify risks</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Spot potential deal blockers</div>
-                          </div>
-                        </Button>
-                      </div>
+                  <Button
+                    onClick={() => setShowAIChat(true)}
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Open AI Chat
+                  </Button>
+                  
+                  <div className="mt-4 space-y-2">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Quick questions</p>
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => setShowAIChat(true)}
+                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
+                      >
+                        <div className="text-xs text-slate-700">What should I do next?</div>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => setShowAIChat(true)}
+                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
+                      >
+                        <div className="text-xs text-slate-700">What are the risks?</div>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => setShowAIChat(true)}
+                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
+                      >
+                        <div className="text-xs text-slate-700">When to follow up?</div>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -917,6 +907,63 @@ export default function DealDetailsPage({
           </div>
         </div>
       </div>
+
+      {/* AI Chat Assistant Modal */}
+      <DealChatAssistant
+        dealId={deal.id.toString()}
+        dealName={deal.name}
+        isOpen={showAIChat}
+        onClose={() => setShowAIChat(false)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 bg-red-100 rounded-full">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  Delete Deal?
+                </h3>
+                <p className="text-sm text-slate-600">
+                  Are you sure you want to delete <strong>"{deal.name}"</strong>? This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 justify-end mt-6">
+              <Button
+                onClick={() => setShowDeleteConfirm(false)}
+                variant="outline"
+                disabled={isDeleting}
+                className="border-slate-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isDeleting ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Deal
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

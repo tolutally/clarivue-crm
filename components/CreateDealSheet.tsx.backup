@@ -270,7 +270,7 @@ export default function CreateDealSheet({ contactId, open, onClose, onSuccess }:
                 )}
               />
               
-              {/* Stage */}
+              {/* Stage and Signal - Side by Side */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Stage */}
                 <FormField
@@ -301,6 +301,35 @@ export default function CreateDealSheet({ contactId, open, onClose, onSuccess }:
                   )}
                 />
                 
+                {/* Signal */}
+                <FormField
+                  control={control}
+                  name="signal"
+                  render={({ field }: any) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-semibold text-gray-700">Signal</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Flag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                          <Select
+                            value={field.value}
+                            onValueChange={(value: string) => field.onChange(value as CreateDealData['signal'])}
+                          >
+                            <SelectTrigger className="h-11 pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500">
+                              <SelectValue placeholder="Select signal" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="positive">🟢 Positive</SelectItem>
+                              <SelectItem value="neutral">🟡 Neutral</SelectItem>
+                              <SelectItem value="negative">� Negative</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
               
               {/* Description */}

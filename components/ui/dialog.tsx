@@ -1,11 +1,34 @@
 import React from 'react';
 
-export const Dialog = ({ open, onOpenChange, children }: any) => (
-  open ? <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">{children}</div> : null
-);
+export const Dialog = ({ open, onOpenChange, children }: any) => {
+  if (!open) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"
+      onClick={(e) => {
+        // Close when clicking the backdrop
+        if (e.target === e.currentTarget) {
+          onOpenChange?.(false);
+        }
+      }}
+      onKeyDown={(e) => {
+        // Close on ESC key
+        if (e.key === 'Escape') {
+          onOpenChange?.(false);
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const DialogContent = ({ children, className }: any) => (
-  <div className={`bg-white rounded-lg p-6 max-w-md w-full ${className || ''}`}>
+  <div 
+    className={`bg-white rounded-lg p-6 max-w-md w-full ${className || ''}`}
+    onClick={(e) => e.stopPropagation()} // Prevent closing when clicking content
+  >
     {children}
   </div>
 );

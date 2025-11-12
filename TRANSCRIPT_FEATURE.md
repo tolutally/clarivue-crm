@@ -1,16 +1,19 @@
 # Call Transcript Feature
 
 ## Overview
+
 Added support for storing call transcripts with AI-generated summaries in activity logs.
 
 ## What Changed
 
 ### Database
+
 - Added `transcript` (TEXT) column to `activities` table
 - Added `transcript_summary` (TEXT) column to `activities` table
 - Added full-text search index on transcript field
 
 ### Features
+
 1. **Full Transcript Storage** - Store complete call/meeting transcripts
 2. **AI Summary Support** - Summary field for quick context (manual for now, AI-generated later)
 3. **Smart UI Display** - Shows summary by default, expandable to view full transcript
@@ -19,11 +22,13 @@ Added support for storing call transcripts with AI-generated summaries in activi
 ### How to Use
 
 1. **Run the Migration**
+
    ```bash
    ./run-transcript-migration.sh
    ```
+
    Or manually run the SQL in Supabase SQL Editor:
-   - Navigate to: https://supabase.com/dashboard/project/kyhwbvkakaactdwpqhps/sql/new
+   - Navigate to: <https://supabase.com/dashboard/project/kyhwbvkakaactdwpqhps/sql/new>
    - Copy and run the SQL from `migrations/add_transcript_to_activities.sql`
 
 2. **Log a Call with Transcript**
@@ -38,7 +43,9 @@ Added support for storing call transcripts with AI-generated summaries in activi
    - Transcripts are searchable and will be used by AI for insights
 
 ## Future AI Integration
+
 When you activate AI features, the system will:
+
 - **Auto-generate summaries** from full transcripts
 - **Analyze sentiment** from call conversations
 - **Extract action items** automatically
@@ -46,6 +53,7 @@ When you activate AI features, the system will:
 - **Search transcript content** for specific topics
 
 ## Technical Details
+
 - Transcripts stored as TEXT (supports up to 1GB)
 - Full-text search enabled for efficient querying
 - UI optimized for long text with scroll and expand/collapse
