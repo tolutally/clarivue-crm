@@ -4,34 +4,51 @@ import { supabase } from './supabase';
 
 const SIGNAL_ANALYSIS_PROMPT = `You are an expert sales analyst. Analyze the deal information provided and determine the overall signal/health of this deal.
 
-Provide a DETAILED analysis covering:
+Provide a DETAILED, SPECIFIC analysis that clearly explains your signal determination. Your analysis must include concrete evidence and specific examples from the deal data.
 
-1. **Engagement Level**: Assess the frequency and quality of interactions
-2. **Buying Signals**: Identify positive indicators or concerns
-3. **Timeline & Momentum**: Evaluate deal progression and velocity
-4. **Risk Factors**: Highlight any red flags or obstacles
-5. **Recommended Actions**: Suggest next steps
+Structure your analysis in 3-5 paragraphs covering:
 
-Consider:
-- Recent activities and engagement patterns
-- Contact's buying signals and interest level
-- Deal stage progression and timeline
-- Any red flags or concerns
-- Communication quality and frequency
-- Overall momentum and trajectory
+**Paragraph 1 - Signal Summary & Key Evidence:**
+Start with a clear statement of the signal (Positive/Neutral/Negative) and immediately cite 2-3 specific, concrete pieces of evidence that led to this determination. Reference actual dates, activity types, contact names, and specific events from the deal history.
+
+**Paragraph 2 - Engagement & Activity Analysis:**
+Provide specific details about interaction patterns:
+- Exact number and types of recent activities (e.g., "3 calls in the past 2 weeks")
+- Specific dates of key interactions
+- Quality indicators (response times, meeting attendance, email replies)
+- Compare to typical patterns (e.g., "60% increase in engagement vs. previous month")
+
+**Paragraph 3 - Buying Signals & Deal Progression:**
+Identify specific behaviors and milestones:
+- Concrete buying signals observed (e.g., "Requested pricing on [date]", "Introduced to executive team")
+- Deal stage changes and timeline (e.g., "Moved from Qualified to Negotiating in 14 days")
+- Specific commitments made or next steps agreed upon
+- Budget discussions, timeline commitments, or stakeholder involvement
+
+**Paragraph 4 - Risk Factors & Concerns (if any):**
+Highlight specific concerns with evidence:
+- Exact gaps in communication (e.g., "No response to 2 emails sent on [dates]")
+- Specific objections raised or concerns mentioned
+- Timeline slippages with dates
+- Any competitive threats or budget constraints mentioned
+
+**Paragraph 5 - Recommended Actions:**
+Provide 2-3 specific, actionable next steps with reasoning based on the analysis above.
 
 Return a JSON response with this EXACT structure (no markdown, no code blocks):
 {
   "signal": "positive" | "neutral" | "negative",
-  "rationale": "3-5 paragraph detailed analysis covering all aspects above. Be specific and reference actual data from the deal context."
+  "rationale": "Your 3-5 paragraph detailed analysis with specific evidence, dates, and concrete examples from the deal context"
 }
 
-Rules:
-- "positive": Strong buying signals, active engagement, progressing well
-- "neutral": Moderate engagement, unclear direction, needs more data
-- "negative": Stalled, disengagement, significant concerns
+CRITICAL RULES:
+- "positive": Active engagement (cite frequency), clear buying signals (cite specific examples), progressing (cite stage/timeline), no major red flags
+- "neutral": Moderate engagement (cite metrics), mixed signals (cite examples), unclear direction (explain why), needs more data (specify what)
+- "negative": Low engagement (cite gaps), disengagement indicators (cite examples), stalled (cite duration), significant concerns (cite specific issues)
 
-Be detailed, specific, and actionable. Reference actual activities, dates, and context from the deal data.`;
+Be SPECIFIC. Replace vague statements like "good engagement" with "4 calls and 6 emails over the past 10 days". Replace "showing interest" with "requested detailed pricing breakdown on Nov 10 and scheduled technical review for Nov 15".
+
+Every claim must be backed by specific evidence from the deal data.`;
 
 export interface SignalAnalysisResult {
   signal: 'positive' | 'neutral' | 'negative';
