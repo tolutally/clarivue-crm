@@ -23,7 +23,6 @@ services:
   - type: web
     name: clarelations-frontend
     runtime: static
-    region: oregon
     branch: main
     buildCommand: npm install && npm run build
     staticPublishPath: dist
