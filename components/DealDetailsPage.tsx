@@ -498,20 +498,32 @@ export default function DealDetailsPage({
                     )}
                   </div>
 
-                  {/* Deal Signal - AI Controlled */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">
-                      Deal Signal
-                      <Badge variant="outline" className="ml-2 text-xs bg-purple-50 text-purple-700 border-purple-200">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        AI Determined
-                      </Badge>
-                    </label>
-                    <SignalBadge 
-                      signal={editedDeal.signal}
-                      rationale={deal.signal_rationale}
-                      className="w-full"
-                    />
+                  {/* AI Deal Signal - Compact & Beautiful */}
+                  <div className="relative overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-purple-50/50 via-white to-indigo-50/50 p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="mt-0.5">
+                          <Sparkles className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-sm font-semibold text-slate-700">AI Signal Analysis</h3>
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-purple-50 text-purple-700 border-purple-200">
+                              AI
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-slate-500">
+                            Comprehensive deal health assessment
+                          </p>
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        <SignalBadge 
+                          signal={editedDeal.signal}
+                          rationale={deal.signal_rationale}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
