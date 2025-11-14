@@ -668,59 +668,6 @@ export default function DealDetailsPage({
                   )}
                 </div>
               </div>
-
-              {/* AI Assistant */}
-              <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
-                <div className="border-b border-slate-100 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-600" />
-                    AI Assistant
-                  </h2>
-                </div>
-                <div className="p-6">
-                  <p className="text-sm text-slate-600 mb-4">
-                    Ask me anything about this deal - I have access to all activities, notes, and transcripts.
-                  </p>
-                  
-                  <Button
-                    onClick={() => setShowAIChat(true)}
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Open AI Chat
-                  </Button>
-                  
-                  <div className="mt-4 space-y-2">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Quick questions</p>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => setShowAIChat(true)}
-                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
-                      >
-                        <div className="text-xs text-slate-700">What should I do next?</div>
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => setShowAIChat(true)}
-                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
-                      >
-                        <div className="text-xs text-slate-700">What are the risks?</div>
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => setShowAIChat(true)}
-                        className="justify-start text-left h-auto py-2 border-slate-200 hover:bg-slate-50"
-                      >
-                        <div className="text-xs text-slate-700">When to follow up?</div>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Sidebar */}
