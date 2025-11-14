@@ -24,7 +24,7 @@ services:
     name: clarelations-frontend
     runtime: static
     branch: main
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --production=false && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_SUPABASE_URL
