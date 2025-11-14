@@ -57,7 +57,7 @@ export function DealChatAssistant({ dealId, dealName, isOpen, onClose }: Props) 
     setError(null);
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const apiBaseUrl = import.meta.env.VITE_API_URL || '';
       
       // Build conversation history (last 10 messages)
       const conversationHistory = messages.slice(-10).map(msg => ({
