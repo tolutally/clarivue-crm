@@ -19,8 +19,8 @@ type ErrorState = {
   details?: string;
 } | null;
 
-// Use env variable if available, otherwise use relative URL (proxied in dev)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// Use env variable for Render deployment, otherwise use relative URL (proxied in dev or Vercel)
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export default function AIRelationshipManager({ contactId, contactName }: Props) {
   const [loadingEngagement, setLoadingEngagement] = useState(false);
