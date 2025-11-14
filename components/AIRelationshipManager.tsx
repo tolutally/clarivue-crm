@@ -140,7 +140,7 @@ export default function AIRelationshipManager({ contactId, contactName }: Props)
           </div>
           <div>
             <CardTitle className="text-lg">AI Relationship Manager</CardTitle>
-            <p className="text-xs text-indigo-100 mt-1">AI-powered insights for {contactName}</p>
+            <p className="text-xs text-indigo-100 mt-1">AI-powered insights for {contactName} • v2.0</p>
           </div>
         </div>
       </CardHeader>
