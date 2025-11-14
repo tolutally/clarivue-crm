@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useMutation } from '@uibakery/data';
 import { Badge } from '@components/ui/badge';
 import { Button } from '@components/ui/button';
 import {
@@ -52,7 +51,6 @@ const activityColors: Record<string, string> = {
 function ActivityItem({ activity, isLast, onEdit, onDelete }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFullTranscript, setShowFullTranscript] = useState(false);
-  const [deleteActivity] = useMutation(deleteActivityAction);
 
   // Choose the appropriate icon and colour based on the activity type
   const IconComponent =
@@ -64,8 +62,15 @@ function ActivityItem({ activity, isLast, onEdit, onDelete }: Props) {
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this activity?')) {
       setIsDeleting(true);
-      await deleteActivity({ activityId: activity.id.toString() });
-      onDelete();
+      try {
+        await deleteActivityAction({ id: activity.id.toString() });
+        onDelete();
+      } catch (error) {
+        console.error('Failed to delete activity:', error);
+        alert('Failed to delete activity. Please try again.');
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
