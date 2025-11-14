@@ -83,8 +83,13 @@ async function createActivity({
   // Trigger deal signal analysis if this activity is associated with a deal
   if (deal_id && !useMockData) {
     console.log(`🎯 Triggering signal analysis for deal: ${deal_id}`);
+    // Dynamic API URL based on environment (Render vs Vercel vs local)
+    const apiUrl = import.meta.env.VITE_API_URL 
+      ? `${import.meta.env.VITE_API_URL}/api/analyze-deal-signal`
+      : '/api/analyze-deal-signal';
+    
     // Fire and forget - don't wait for signal analysis to complete
-    fetch('/api/analyze-deal-signal', {
+    fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dealId: deal_id }),
